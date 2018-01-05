@@ -1,0 +1,230 @@
+<template>
+	<main class="	main">
+		<h2>管理员信息管理</h2>
+		<div class="l table">
+		<el-table
+			:data="tableData"
+			style="width: 100%"
+			:height="clientHeight"
+			v-loading="tableloading"
+			element-loading-text="拼命加载中"
+			element-loading-spinner="el-icon-loading"
+			element-loading-background="rgba(255, 255, 255, 1)"
+	      >
+	      <el-table-column
+	        prop="realName"
+	        label="用户名"
+	       	align="center">
+	      </el-table-column>
+	      <el-table-column
+	        prop="ssdw"
+	        label="所属单位"
+	        align="center">
+	      </el-table-column>
+	      <el-table-column
+	        prop="tel"
+	        label="办公电话"
+	        align="center">
+	      </el-table-column>
+	      <el-table-column
+	        prop="cellphone"
+	        label="手机号码"
+	        align="center">
+	      </el-table-column>
+	      <el-table-column
+	        prop="jurisdiction"
+	        label="管辖区域"
+	        align="center">
+	      </el-table-column>
+	      <el-table-column
+	        prop="loginTime"
+	        label="最近登陆时间"
+					sortable
+	        align="center">
+	      </el-table-column>
+	      	<el-table-column
+		      prop="state"
+		      label="账户启用"
+		      align="center" 
+					width="100"
+		      >
+	       <template slot-scope="scope">
+		        <el-checkbox v-model='scope.row.state' @change="checkChange(scope) " class="myFlood"></el-checkbox>
+		     </template>
+	      </el-table-column>	     
+	      <el-table-column
+	        prop="options"
+	        label="操作"
+	        align="center"
+					width="140">
+	          <template slot-scope="scope">
+		        <el-button type="text" size="small" @click="optionRow(scope)">修改</el-button>
+		      </template>
+	      </el-table-column>
+	    </el-table>
+		</div>
+	  <el-dialog title="修改用户" :visible.sync="option" width="550px">
+	  <el-form :model="optionForm" class="optionForm clear">
+	    <el-form-item label="用户名" :label-width="formLabelWidth" size="small">
+	      <el-input v-model="optionForm.realName" size="small"></el-input>
+	    </el-form-item>
+	    <el-form-item label="所属单位" :label-width="formLabelWidth" size="small">
+	      <el-input v-model="optionForm.ssdw" size="small" ></el-input>
+	    </el-form-item>
+			<el-form-item label="办公电话" :label-width="formLabelWidth" size="small">
+	      <el-input v-model="optionForm.tel" size="small" ></el-input>
+	    </el-form-item>
+			<el-form-item label="手机号码" :label-width="formLabelWidth" size="small">
+	      <el-input v-model="optionForm.cellphone" size="small" ></el-input>
+	    </el-form-item>
+			<el-form-item label="管辖地区" :label-width="formLabelWidth" size="small">
+	      <el-input v-model="optionForm.jurisdiction" size="small" ></el-input>
+	    </el-form-item>
+			<el-form-item label="用户密码" :label-width="formLabelWidth" size="small">
+	      <el-input v-model="optionForm.password" size="small" ></el-input>
+	    </el-form-item>
+	  </el-form>
+	  <div slot="footer" class="dialog-footer">
+	    <el-button type="primary" @click="sureOption" size="small" class="buttons sureBtn">确 定</el-button>
+	    <el-button @click="cancleOption" size="small" class="buttons">取 消</el-button>
+	  </div>
+	</el-dialog>
+	</main>
+
+</template>
+
+<script>
+import qs from 'qs'
+	export default{
+  name: 'UserManage',
+  data () {
+    return {
+      tableData: [],							//用户数据
+			clientHeight: 0,						//table可视区高度
+			tableloading: false,
+			option: false,							//设置弹窗显示控制
+			formLabelWidth: '72px',			//表单label宽度统一
+			optionForm: {								//设置弹窗数据
+      	realName: '',
+        ssdw: '',
+        tel: '',
+				cellphone: '',
+				jurisdiction: '',
+				password: '',
+				addvcd: '',
+				userName:''
+      }
+    }
+  },
+  methods: {
+    checkChange (scope) {						//账户是否启用
+			console.log(scope)
+			let userName = scope.row.userName
+			let state = scope.row.state === true?1:0
+			this.$http.put(this.baseUrl + 'userManage/user/'+userName, qs.stringify({state:state}))
+      .then((res) => {
+				console.log(res)
+      }).catch(function (err) {
+        console.log(err)
+      })
+    },
+    activeMenu () {									//设置header默认选中为用户管理
+      this.$store.commit('activeMenu', '8')
+    },
+    getTableInfo () {								//获取用户列表
+			this.tableloading = true
+      this.$http.get(this.baseUrl + 'userManage/user', qs.stringify({}))
+      .then(res => {
+        if (res.data.code === 0) {
+          let data = res.data.data
+					console.log(data)
+          let tableData = []
+          for (var i=0;i < data.length; i++) {
+            let obj = {}
+            obj.realName = data[i].realname === null?'-':data[i].realname
+            obj.ssdw = data[i].ssdw === null?'-':data[i].ssdw
+            obj.tel = data[i].phone === null?'-':data[i].phone
+            obj.cellphone = data[i].cellphone === null?'-':data[i].cellphone
+            obj.loginTime = this.timeTrans(data[i].loginTm)
+            obj.jurisdiction = data[i].addvnm
+						obj.addvcd = data[i].addvcd
+						obj.password = data[i].password
+						obj.userName = data[i].username
+            obj.state = data[i].state === 1?true:false
+            tableData.push(obj)
+          }
+					this.tableData = tableData
+					this.tableloading = false
+        }	
+      }).catch(function (err) {
+				console.log(err)
+      })
+    },
+		getClientHeight () {								//获取tablek可视区高度
+			this.clientHeight = this.getClientAtBegin()
+		},
+		optionRow (scope) {									//用户修改弹窗内容
+			this.option = true
+			console.log(scope)
+			this.optionForm.realName = scope.row.realName
+			this.optionForm.ssdw = scope.row.ssdw
+			this.optionForm.tel = scope.row.tel
+			this.optionForm.cellphone = scope.row.cellphone
+			this.optionForm.jurisdiction = scope.row.jurisdiction
+			this.optionForm.password = scope.row.password
+			this.optionForm.addvcd = scope.row.addvcd
+			this.optionForm.userName = scope.row.userName
+		},
+  	sureOption () {											//用户修改提交
+			let userName = this.optionForm.userName
+			console.log(userName)
+			this.$http.put(this.baseUrl + 'userManage/user/'+userName, qs.stringify({
+				realName:this.optionForm.realName,
+				ssdw:this.optionForm.ssdw,
+				tel:this.optionForm.tel,
+				cellphone:this.optionForm.cellphone,
+				addvnm:this.optionForm.jurisdiction,
+				password:this.optionForm.password
+			}))
+      .then((res) => {
+				console.log(res)
+				this.getTableInfo()								//刷新用户列表内容
+				this.option = false
+				this.$message({
+					type: 'success',
+					message: '修改成功!'
+				})
+      }).catch((err) => {
+				console.log(err)
+				this.$message({
+					type: 'info',
+					message: '修改失败!'
+				})
+      })
+		},
+  	cancleOption () {										//取消修改
+  	  this.option = false
+		}
+  },
+  created: function () {
+    this.activeMenu()
+		this.getTableInfo()
+		this.getClientHeight()
+  }
+}
+</script>
+	
+<style scoped>
+	.table{
+		width:100%;
+	}
+	h2{
+		margin-bottom:20px;
+	}
+	.buttons{
+		width:110px;
+	}
+	.sureBtn{
+		margin-right:20px;
+	}
+</style>
