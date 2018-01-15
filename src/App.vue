@@ -192,6 +192,12 @@ export default {
 	.el-input .el-input__inner,.el-checkbox .el-checkbox__inner,.el-textarea .el-textarea__inner, .el-button {
 			border-radius: 0;
 	}
+	.el-input__inner{
+		height:32px !important;
+	}
+	.el-select__tags{
+		margin-top:2px;
+	}
 	.el-table .stop-cell {
 		color:#efae22;
 	}

@@ -55,7 +55,7 @@
                         <el-input v-model="form.mName" class="input"></el-input>
                     </el-form-item>
                     <el-form-item label="父级菜单" size="small">
-                        <el-select v-model="form.pId" placeholder="请选择活动区域" class="input">
+                        <el-select v-model="form.pId"  class="input" @chang="selectChange(val)">
                         <el-option label="无" value="0" ></el-option>
                         <el-option v-for="val in fatherMenu" :label="val.mName" :value="val.id" :key="val.id"></el-option>
                         </el-select>
@@ -122,6 +122,9 @@ import qs from 'qs'
 		}
     },
     methods: {
+        selectChange (val) {
+            console.log(val)
+        },
         choose (event) {
             let id
             let listName
@@ -171,7 +174,6 @@ import qs from 'qs'
             
         },
         onDelete () {
-            console.log(this.id)
             this.$confirm('此操作将删除该用户所有关注站点, 是否继续?', '提示', {				//删除弹出窗
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -201,107 +203,107 @@ import qs from 'qs'
             }).catch(() => {})
         },
         onSubmit () {
-            if(this.form.mName == '')this.form.mName = '未命名'
-            if(this.form.mType == 'view' && this.form.mUrl == ''){
+            console.log(this.form)
+            if(!this.id){
                 this.$message({
                     type: 'info',
-                    message: '类型为view时，菜单链接不能为空'
-                })
-            }else if(this.form.mType == 'click' && this.form.mKey == ''){
-                this.$message({
-                    type: 'info',
-                    message: '类型为click时，唯一键不能为空'
+                    message: '请先选择菜单！'
                 })
             }else{
-                if(this.form.pId == '0'){
-                    if(this.form.mName.length > 4){
-                        this.$message({
-                            type: 'info',
-                            message: '菜单名称字数超出限制'
-                        })
-                    }else{
-                        this.$http.put(this.baseUrl + 'menuManage/menu/' + this.id, qs.stringify(this.form))
-                        .then((res) => {
-                            console.log(res)
-                            if(res.data.code === 0){
-                                this.getMenuAtBegin()
-                                this.$message({
-                                    type: 'success',
-                                    message: '保存成功'
-                                })
-                                console.log(1111111111)
-                            }else{
-                                this.$message({
-                                    type: 'info',
-                                    message: '保存失败'
-                                })
-                            }
-                        }).catch((err) => {
-                            console.log(err)               
-                        })
-                    }
+                if(this.form.mName == '')this.form.mName = '未命名'
+                if(this.form.mType == 'view' && this.form.mUrl == ''){
+                    this.$message({
+                        type: 'info',
+                        message: '类型为view时，菜单链接不能为空'
+                    })
+                }else if(this.form.mType == 'click' && this.form.mKey == ''){
+                    this.$message({
+                        type: 'info',
+                        message: '类型为click时，唯一键不能为空'
+                    })
                 }else{
-                    if(this.form.mName.length > 7){
-                        this.$message({
-                            type: 'info',
-                            message: '菜单名称字数超出限制'
-                        })
-                    }else{
-                        if(this[this.listName].length >= 5 && this.id == 'add'){
+                    if(this.form.pId == '0'){
+                        if(this.form.mName.length > 4){
                             this.$message({
                                 type: 'info',
-                                message: '二级菜单个数超出限制'
+                                message: '菜单名称字数超出限制'
                             })
                         }else{
-                            if(this.id === 'add'){
-                                this.$http.post(this.baseUrl + 'menuManage/menu', qs.stringify(this.form))
-                                .then((res) => {
-                                    console.log(res)
-                                    if(res.data.code === 0){
-                                        this.getMenuAtBegin()
-                                        this.id = res.data.data
-                                        console.log(res.data.data)
-                                        this.$message({
-                                            type: 'success',
-                                            message: '添加成功'
-                                        })
-                                        console.log(222222222)
-                                    }else{
-                                        this.$message({
-                                            type: 'info',
-                                            message: '添加失败'
-                                        })
-                                    }
-                                }).catch((err) => {
-                                    console.log(err)               
+                            this.$http.put(this.baseUrl + 'menuManage/menu/' + this.id, qs.stringify(this.form))
+                            .then((res) => {
+                                console.log(res)
+                                if(res.data.code === 0){
+                                    this.getMenuAtBegin()
+                                    this.$message({
+                                        type: 'success',
+                                        message: '保存成功'
+                                    })
+                                }else{
+                                    this.$message({
+                                        type: 'info',
+                                        message: '保存失败'
+                                    })
+                                }
+                            }).catch((err) => {
+                                console.log(err)               
+                            })
+                        }
+                    }else{
+                        if(this.form.mName.length > 7){
+                            this.$message({
+                                type: 'info',
+                                message: '菜单名称字数超出限制'
+                            })
+                        }else{
+                            if(this[this.listName].length >= 5 && this.id == 'add'){
+                                this.$message({
+                                    type: 'info',
+                                    message: '二级菜单个数超出限制'
                                 })
                             }else{
-                                this.$http.put(this.baseUrl + 'menuManage/menu/' + this.id, qs.stringify(this.form))
-                                .then((res) => {
-                                    console.log(res)
-                                    if(res.data.code === 0){
-                                        this.getMenuAtBegin()
-                                        this.$message({
-                                            type: 'success',
-                                            message: '保存成功'
-                                        })
-                                        console.log(3333333)
-                                    }else{
-                                        this.$message({
-                                            type: 'info',
-                                            message: '保存失败'
-                                        })
-                                    }
-                                }).catch((err) => {
-                                    console.log(err)               
-                                })
-                            }                  
+                                if(this.id === 'add'){
+                                    this.$http.post(this.baseUrl + 'menuManage/menu', qs.stringify(this.form))
+                                    .then((res) => {
+                                        if(res.data.code === 0){
+                                            this.getMenuAtBegin()
+                                            this.id = res.data.data
+                                            this.$message({
+                                                type: 'success',
+                                                message: '添加成功'
+                                            })
+                                        }else{
+                                            this.$message({
+                                                type: 'info',
+                                                message: '添加失败'
+                                            })
+                                        }
+                                    }).catch((err) => {
+                                        console.log(err)               
+                                    })
+                                }else{
+                                    this.$http.put(this.baseUrl + 'menuManage/menu/' + this.id, qs.stringify(this.form))
+                                    .then((res) => {
+                                        if(res.data.code === 0){
+                                            this.getMenuAtBegin()
+                                            this.$message({
+                                                type: 'success',
+                                                message: '保存成功'
+                                            })
+                                        }else{
+                                            this.$message({
+                                                type: 'info',
+                                                message: '保存失败'
+                                            })
+                                        }
+                                    }).catch((err) => {
+                                        console.log(err)               
+                                    })
+                                }                  
+                            }
                         }
                     }
                 }
-            }
-            
-              
+            } 
         },
         activeMenu () {									//设置header默认选中为用户管理
         this.$store.commit('activeMenu', '9')

@@ -188,7 +188,6 @@
 		  },
 		treeNode: [],
 		hadChecked: {},
-		checked: '',
 		tableloading: false,
 		treeloading: false,
 		childloading: false,
@@ -234,6 +233,7 @@
 	//若是生成时间戳做为nId
 	//若否则调用获取该客户端table的函数
 	select (nId) {
+		this.nId = nId	
 		this.optionForm = {}
 		if(nId.indexOf("add") >= 0){
 			this.disabled = false
@@ -261,7 +261,6 @@
 			this.disabled = true
 			this.getTableData(nId)
 		}
-		this.nId = nId	
 	},
 	//客户端组打开时的函数，获取组内的客户端
 	open (id) {	
@@ -296,6 +295,7 @@
 				setTimeout(() => {
 					if(data[0]){
 						this.activeNode = data[0].nId
+						this.nId = data[0].nId
 					}	
 				}, 30)
 			}
@@ -515,7 +515,6 @@
 	//删除客户端下的分发站点
   	deleteSite (scope) {
         let stcd = scope.row.stcd
-		console.log(stcd)
 		this.$confirm('此操作将删除该分发站点, 是否继续?', '提示', {
 			confirmButtonText: '确定',
 			cancelButtonText: '取消',
@@ -543,7 +542,7 @@
 					type: 'info',
 					message: '删除失败'
 				})
-			})				
+			})			
 		}).catch(() => {})
   	},
 	  //删除所有分发站点
@@ -744,6 +743,7 @@
 	},
 	//获取客户端组s
 	getGroupAtBegin () {
+		this.activeMenuNode = ''
 		this.tableloading = true
 		this.treeloading = true
 		this.$http.get(this.baseUrl + 'nodeManage/nodeGroup', qs.stringify({}))
@@ -752,7 +752,7 @@
 				let data = res.data.data
 				let arr = []
 				this.open(data[0].id)
-				this.openedsMenuNode.push(data[0].id)
+				this.openedsMenuNode[0] = data[0].id
 				for (let i = 0; i< data.length; i++) {
 					let obj = {}
 					obj.name = data[i].name
@@ -761,10 +761,9 @@
 				}
 				this.fatherNode = arr
 				setTimeout(() => {
-					console.log(this.activeNode)
 					this.activeMenuNode = this.activeNode
 					this.getTableData(this.activeNode)	
-				}, 900)	
+				}, 1000)	
 			}
 		}).catch((err) => {
 			console.log(err)

@@ -284,14 +284,12 @@ import qs from 'qs'
 	watch: {
 		getSiteStcd(val){								//监听stcd
 			if (val) {
-				console.log(val)
 				this.getStationNumOption(val)			//stcd变化时获取参数
 				let sttp = this.$store.state.siteSttp
 				this.clearOption(sttp)					//清空参数
 			}
 		},
 		getSiteSttp(val,oldVal){						//监听sttp
-			console.log(val)
 			this.selecter(val)
 			this.clearOption(oldVal)
 		}
@@ -309,7 +307,6 @@ import qs from 'qs'
 			this.dataloading = true
 			this.$http.get(this.baseUrl + 'stationInfo/wxbxcs/' + stcd, qs.stringify({}))
 			.then((res) => {
-				console.log(res)
 				if(res.data.code === 0){
 					let data = res.data.data
 					if(data.length){
@@ -330,13 +327,11 @@ import qs from 'qs'
 			let sttp = this.$store.state.siteSttp
 			let stcd = this.$store.state.siteStcd
 			let objName = this.transListName(sttp)
-			console.log(objName)
 			let key 
 			let dataArr = []
 			for (key in this[objName]) {
 				dataArr.push(this[objName][key])
 			}
-			console.log(dataArr)
 			this.$http({
 				headers: {'Content-Type': 'application/json;charset=UTF-8'},
 				method: 'put',
@@ -344,7 +339,6 @@ import qs from 'qs'
 				data: dataArr
 			})
 			.then((res) => {
-				console.log(res)
 				this.loading = false
 				if(res.data.code === 0){
 					this.$message({

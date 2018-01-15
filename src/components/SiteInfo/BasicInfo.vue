@@ -22,21 +22,29 @@
   </el-form-item>
   <el-form-item label="站点类别" prop="region">
     <el-select v-model="ruleForm.sttp" placeholder="请选择活动区域" class="basicInput">
-      <el-option label="区域一" value="shanghai"></el-option>
-      <el-option label="区域二" value="beijing"></el-option>
+      <el-option
+        v-for="item in sttpOptions"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value">
+      </el-option>
     </el-select>
   </el-form-item>
   <el-form-item label="行政区规划">
     <el-input v-model="ruleForm.addvcd" class="basicInput"></el-input>
   </el-form-item>
   <el-form-item label="报汛等级" prop="region">
-    <el-select v-model="ruleForm.frgrd" placeholder="请选择活动区域" class="basicInput">
-      <el-option label="区域一" value="shanghai"></el-option>
-      <el-option label="区域二" value="beijing"></el-option>
-    </el-select>
+    <el-input v-model="ruleForm.frgrd" class="basicInput"></el-input>
   </el-form-item>
   <el-form-item label="报汛项目" prop="region">
-    <el-input v-model="ruleForm.item" class="basicInput"></el-input>
+    <el-select v-model="itemValue" multiple placeholder="请选择报汛项目" class="basicInput" size="small">
+      <el-option
+        v-for="item in itemOptions"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value">
+      </el-option>
+    </el-select>
   </el-form-item>
   <el-form-item label="拼音码">
     <el-input v-model="ruleForm.phcd" class="basicInput"></el-input>
@@ -94,7 +102,43 @@ import qs from 'qs'
           bgfrym: '',
           stlc: '',
           comments: ''
-        },                      
+        },  
+        itemValue:[], 
+        sttpOptions:[{                    
+          value: 'PP',
+          label: '雨量站'
+        }, {
+          value: 'RR',
+          label: '水库站'
+        }, {
+          value: 'ZZ',
+          label: '河道站'
+        }, {
+          value: 'DD',
+          label: '闸坝站'
+        }, {
+          value: 'TT',
+          label: '潮位站'
+        }, {
+          value: 'EE',
+          label: '蒸发站'
+        }],  
+        itemOptions: [{
+          value: 'P',
+          label: '雨量'
+        }, {
+          value: 'Z',
+          label: '水位'
+        }, {
+          value: 'Q',
+          label: '流量'
+        }, {
+          value: 'E',
+          label: '蒸发'
+        }, {
+          value: 'S',
+          label: '墒情'
+        }],               
         loading: false
       }
     },  
@@ -105,7 +149,6 @@ import qs from 'qs'
     },
     watch: {
       getSiteStcd(val){                 //监听stcd的变化
-        console.log(val)
         if (val) {
           this.getSiteBasicInfo(val)      //触发获取站点基础信息的函数
         }
@@ -115,9 +158,7 @@ import qs from 'qs'
       getSiteBasicInfo (stcd) {             //获取站点基础信息的函数
         this.$http.get(this.baseUrl + 'stationInfo/stationBaseInfo/'+stcd)
         .then((res) => {
-          console.log(res)
           if(res.data.code === 0){
-            console.log(res.data.data)
             let data = res.data.data
             let obj = {}
             obj.stnm = data.stnm
@@ -148,7 +189,11 @@ import qs from 'qs'
             obj.item = data.item === null?'-':data.item
             obj.comments = data.comments
             this.ruleForm = obj
-            console.log(obj)
+            if(data.item){
+              this.itemValue = data.item.split('')
+            }else{
+              this.itemValue = []
+            }
           }
         }).catch(function (err) {
           console.log(err)
@@ -159,8 +204,7 @@ import qs from 'qs'
         let ruleForm = JSON.parse(JSON.stringify(this.ruleForm))
         ruleForm.esstym = ruleForm.esstym.split('-')[0]+ruleForm.esstym.split('-')[1]
         ruleForm.bgfrym = ruleForm.bgfrym.split('-')[0]+ruleForm.bgfrym.split('-')[1]
-        ruleForm.item = ruleForm.item === '-'?null:ruleForm.item
-        console.log(ruleForm)
+        ruleForm.item = this.itemValue.join('')
         this.$http.put(this.baseUrl + 'stationInfo/stationBaseInfo/', qs.stringify(ruleForm))
         .then((res) => {
           if(res.data.code === 0){
@@ -186,7 +230,6 @@ import qs from 'qs'
       },
       getBasicBegin () {                       //打开时获取基础信息
         let siteStcd = this.$store.state.siteStcd
-        console.log(siteStcd)
         if (siteStcd) {
           this.getSiteBasicInfo(siteStcd)
         } 

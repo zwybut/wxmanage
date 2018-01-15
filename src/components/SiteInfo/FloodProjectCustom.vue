@@ -425,7 +425,6 @@ import qs from 'qs'
 				let stcd = this.$store.state.siteStcd
 				this.$http.post(this.baseUrl + 'stationInfo/wxbxxm/' + stcd, qs.stringify({filedKey: filedKey,type: type, method: method}))
 				.then((res) => {
-					console.log(res)
 					if (res.data.code === 0) {
 						if(method === 'add'){
 							this.$message({

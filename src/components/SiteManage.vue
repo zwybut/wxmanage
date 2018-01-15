@@ -20,7 +20,7 @@
 				<ul>
 					<li class='clear liNodes' @click="choose($event)" v-for='item in userList'><img src="../assets/weChart_logo.png" class='l img'></img>
 						<div class='l'><span style="display:none">{{item.openId}}</span><span class="name">{{item.realName}}</span><span class="tel">{{item.cellPhone}}</span><br /><span class="adress">{{item.department}}</span></div>
-						<span class='chat r'></span>
+						<span class='chat r' @click="reply = true"></span>
 					</li>
 				</ul>
 			</div>
@@ -117,6 +117,21 @@
 			</div>
 			<el-button class="sureChoose" type="primary" @click="sureChoose" size="small">添加用户报汛站点</el-button>
 		</div>
+		</el-dialog>
+	  	<el-dialog title="发送消息" :visible.sync="reply" width="550px">
+			<el-form :model="replyForm">
+				<el-form-item label="接收人员" :label-width="formLabelWidth">
+				<el-input v-model="replyForm.name" size="small" readonly></el-input>
+				</el-form-item>
+				<el-form-item label="消息内容" :label-width="formLabelWidth" style="height:54px">
+				<el-input v-model="replyForm.content" type="textarea" size="small" ></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="sureReply" size="small" class="buttons">确 定</el-button>
+				<el-button @click="cancleReply" size="small" class="buttons">取 消</el-button>
+			</div>
+		</el-dialog>
 	</div>
 </template>
 
@@ -141,10 +156,43 @@
 			clientHeight: 0,		//table可视区高度 用来切头
 			search_input: '',		//用户搜索框
 			tree_input: '',			//站点查询
-			getCheckedKeys: []		//已选中的添加站点列表（tree）
+			getCheckedKeys: [],		//已选中的添加站点列表（tree）
+			reply: false,
+			replyForm: {				//回复弹出窗对象
+				name: '',
+				content: ''
+			},
+			formLabelWidth: '72px'
 			}
 		},
 		methods: {
+			sureReply () {												//审核弹出框提交操作	  
+				let openId = this.openId
+				let content = this.replyForm.content
+				this.$http.post(this.baseUrl+'WXUser/wxuser/' + openId, qs.stringify({'data': content}))
+				.then((res) => {
+					console.log(res)
+					this.replyForm.content = ''
+					if (res.data.code === 0) {
+						this.reply = false
+						this.$message({
+							type: 'success',
+							message: '回复成功！'
+						})
+					}else{
+						this.reply = false
+						this.$message({
+							type: 'info',
+							message: '回复失败'
+						})
+					}
+				}).catch((err) => {
+					console.log(err)
+				})
+			},
+			cancleReply () {										//弹出框取消按键操作
+				this.reply = false	  
+			},
 			filterNode (value, data) {
 				if (!value) return true;
         		return data.label.indexOf(value) !== -1
@@ -281,7 +329,7 @@
 							})
 						}else{
 							this.$message({
-								type: 'success',
+								type: 'info',
 								message: '成功取消我的报汛!'
 							})
 						}
@@ -372,7 +420,6 @@
 				})
 			},
 			addStationToList (val) { 						//将已关注的站点添加到关注table中
-				console.log(this.getCheckedKeys)
 				if (val.data.code === 0) {
 					let data = val.data.data
 					let arr = []
@@ -408,7 +455,9 @@
 				let nodeChild = node.children[1]
 				let openId = nodeChild.children[0].innerHTML
 				this.openId = openId
+				this.replyForm.name = nodeChild.children[1].innerHTML
 				this.getTableData (openId)
+				
 			},
 			getTableData (openId) {							//获取用户关注站点table
 				this.tableloading = true
@@ -611,5 +660,8 @@
 	.sureChoose{
 		float:right;
 		width:100%;
+	}
+	.el-dialog .el-dialog__body{
+		padding:0 20px!important;
 	}
 </style>

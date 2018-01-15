@@ -83,14 +83,10 @@ export default{
 		},
     handleNodeClick (data,node,self) {							//tree点击函数
       if(data.stcd){
-				// this.$router.push({path: '/SiteInfo/BasicInfo'})
-				console.log(node)
 				this.first = node.parent.parent.data.label							//将名称等信息赋值
 				this.second = node.parent.data.label
 				this.third = node.data.label
         this.activeIndex = '1'
-				console.log(data.stcd)
-				console.log(data.sttp)
 				this.$store.commit('siteStcd',data.stcd)							//站点stcd存到store中
 				this.$store.commit('siteSttp',data.sttp)							//站点sttp存到store中
       }
@@ -164,8 +160,6 @@ export default{
 				let show = second[0].label
 				let STTP = second[0].sttp
 				let STCD = second[0].stcd
-				console.log(STTP)
-				console.log(STCD)
 				this.showNode.push(show) 			
 				setTimeout(()=>{
 					this.first = treeData[0].label

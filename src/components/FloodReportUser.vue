@@ -61,7 +61,7 @@
 					:show-overflow-tooltip='trueBoolen'>
 	      </el-table-column>
 	      <el-table-column
-	        prop="area"
+	        prop="addvnm"
 	        label="所在地区"
 	        align="center">
 	      </el-table-column>
@@ -328,6 +328,7 @@ export default{
 			console.log(scope)
   	  this.reply = true
   	  this.replyForm.name = scope.row.realName
+			this.replyForm.content = ''
   	  this.replyForm.openId= scope.row.openId
   	},
     deleteRow (scope) {										//删除按键
@@ -385,7 +386,8 @@ export default{
           obj.addvcd = data[i].addvcd
           obj.sex = data[i].sex
           obj.cellPhone = data[i].cellPhone
-          obj.tm = this.timeTrans(data[i].tm)
+					obj.tm = this.timeTrans(data[i].tm)
+					obj.addvnm = data[i].addvnm
           var str = ''
           switch (data[i].state) {
             case '1': str = '启用'

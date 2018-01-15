@@ -22,7 +22,7 @@
 	        align="center">
 	      </el-table-column>
 	      <el-table-column
-	        prop="tel"
+	        prop="phone"
 	        label="办公电话"
 	        align="center">
 	      </el-table-column>
@@ -72,10 +72,10 @@
 	      <el-input v-model="optionForm.ssdw" size="small" ></el-input>
 	    </el-form-item>
 			<el-form-item label="办公电话" :label-width="formLabelWidth" size="small">
-	      <el-input v-model="optionForm.tel" size="small" ></el-input>
+	      <el-input v-model="optionForm.phone" size="small" ></el-input>
 	    </el-form-item>
 			<el-form-item label="手机号码" :label-width="formLabelWidth" size="small">
-	      <el-input v-model="optionForm.cellphone" size="small" ></el-input>
+	      <el-input v-model="optionForm.cellPhone" size="small" ></el-input>
 	    </el-form-item>
 			<el-form-item label="管辖地区" :label-width="formLabelWidth" size="small">
 	      <el-input v-model="optionForm.jurisdiction" size="small" ></el-input>
@@ -107,8 +107,8 @@ import qs from 'qs'
 			optionForm: {								//设置弹窗数据
       	realName: '',
         ssdw: '',
-        tel: '',
-				cellphone: '',
+        phone: '',
+				cellPhone: '',
 				jurisdiction: '',
 				password: '',
 				addvcd: '',
@@ -118,12 +118,23 @@ import qs from 'qs'
   },
   methods: {
     checkChange (scope) {						//账户是否启用
-			console.log(scope)
 			let userName = scope.row.userName
 			let state = scope.row.state === true?1:0
 			this.$http.put(this.baseUrl + 'userManage/user/'+userName, qs.stringify({state:state}))
       .then((res) => {
-				console.log(res)
+				if(res.data.code === 0){
+					if(state){
+						this.$message({
+							type: 'success',
+							message: '账户已启用!'
+						})
+					}else{
+						this.$message({
+							type: 'info',
+							message: '账户已停用!'
+						})
+					}
+				}
       }).catch(function (err) {
         console.log(err)
       })
@@ -141,10 +152,10 @@ import qs from 'qs'
           let tableData = []
           for (var i=0;i < data.length; i++) {
             let obj = {}
-            obj.realName = data[i].realname === null?'-':data[i].realname
-            obj.ssdw = data[i].ssdw === null?'-':data[i].ssdw
-            obj.tel = data[i].phone === null?'-':data[i].phone
-            obj.cellphone = data[i].cellphone === null?'-':data[i].cellphone
+            obj.realName = data[i].realname == null||''?'-':data[i].realname
+            obj.ssdw = data[i].ssdw == null?'-':data[i].ssdw
+            obj.phone = data[i].phone == null?'-':data[i].phone
+            obj.cellphone = data[i].cellphone == null?'-':data[i].cellphone
             obj.loginTime = this.timeTrans(data[i].loginTm)
             obj.jurisdiction = data[i].addvnm
 						obj.addvcd = data[i].addvcd
@@ -168,8 +179,8 @@ import qs from 'qs'
 			console.log(scope)
 			this.optionForm.realName = scope.row.realName
 			this.optionForm.ssdw = scope.row.ssdw
-			this.optionForm.tel = scope.row.tel
-			this.optionForm.cellphone = scope.row.cellphone
+			this.optionForm.phone  = scope.row.phone 
+			this.optionForm.cellPhone = scope.row.cellphone
 			this.optionForm.jurisdiction = scope.row.jurisdiction
 			this.optionForm.password = scope.row.password
 			this.optionForm.addvcd = scope.row.addvcd
@@ -177,12 +188,12 @@ import qs from 'qs'
 		},
   	sureOption () {											//用户修改提交
 			let userName = this.optionForm.userName
-			console.log(userName)
+			console.log(this.optionForm)
 			this.$http.put(this.baseUrl + 'userManage/user/'+userName, qs.stringify({
 				realName:this.optionForm.realName,
 				ssdw:this.optionForm.ssdw,
-				tel:this.optionForm.tel,
-				cellphone:this.optionForm.cellphone,
+				phone:this.optionForm.phone,
+				cellPhone:this.optionForm.cellPhone,
 				addvnm:this.optionForm.jurisdiction,
 				password:this.optionForm.password
 			}))

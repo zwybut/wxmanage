@@ -255,8 +255,8 @@ export default{
       this.currentPage = currentPage
     },
   	search () {                           //查询
-  	  //console.log(this.timer)
-  	  if(this.timer.length){
+  	  console.log(this.timer)
+  	  if(this.timer){
   	  	this.getTableData(this.timer[0],this.timer[1],this.valueSttp,this.phcd)
   	  }else{
   	  	this.getTableData(null,null,this.valueSttp,this.phcd)
@@ -289,12 +289,13 @@ export default{
       }).catch(() => {})
   	},
   	getTableData (startTime, endTime, sttp, phcd) {             //获取报汛table数据
+    this.tableData = []
   	  this.tableloading = true
       let that = this
-      // console.log(startTime, endTime, sttp, phcd)
+      console.log(startTime, endTime, sttp, phcd)
       this.$http.post(this.baseUrl + 'BXInfo/RGBX_RPT', qs.stringify({startTm: startTime, endTm: endTime, sttp: sttp, phcd: phcd}))
       .then(function (res) {
-      	// console.log(res)
+      	 console.log(res)
       	if(res.data.code === 0 ){
       	  // console.log(res.data.data)
           let data = res.data.data
