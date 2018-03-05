@@ -12,6 +12,7 @@ Vue.prototype.$http = axios
     //以阻止 vue 在启动时生成生产提示
 Vue.config.productionTip = false
 Vue.prototype.baseUrl = config.baseUrl
+Vue.prototype.notAuthUrl = config.notAuthUrl
     //'http://wx.gis580.com/wxbx/wxmanage/'
     //解决ajax跨域请求
 axios.defaults.withCredentials = true
@@ -42,6 +43,26 @@ Vue.prototype.getClientAtBegin = () => {
     //js去除字符串前后空格
 Vue.prototype.trim = (str) => {
     return str.replace(/(^\s*)|(\s*$)/g, "")
+}
+Vue.prototype.sttpTransform = (str) => {
+  let sttp
+  switch (str) {
+      case 'PP':sttp = '雨量站'
+      break;
+      case 'RR':sttp = '水库站'
+      break;
+      case 'ZZ':sttp = '河道站'
+      break;
+      case 'DD':sttp = '闸坝站'
+      break;
+      case 'TT':sttp = '潮位站'
+      break;
+      case 'EE':sttp = '蒸发站'
+      break;
+      default:
+        break;
+    }
+    return sttp
 }
 new Vue({
     el: '#app',

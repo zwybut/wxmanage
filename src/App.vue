@@ -68,12 +68,12 @@ export default {
       }).catch((err) => {
         console.log(err)
       })
-      
+
     },
     getStorage () {										//获取sessionStorage中的用户名
       let sStorage = window.sessionStorage
       if (sStorage['loginName']) {							//存在，将store中的show置为true
-        this.$store.commit('show', true)					
+        this.$store.commit('show', true)
       } else {																//不存在，跳转至登陆页面
         this.$router.push('/Login')
       }
@@ -88,7 +88,6 @@ export default {
   }
 }
 </script>
-
 <style>
 	html,body{
 		margin:0;
@@ -258,7 +257,7 @@ export default {
 	}
 	.el-message-box__status.el-icon-warning {
 		color: #F6536E;
-		font-size: 35px!important;	
+		font-size: 35px!important;
 	}
 	.el-message-box__message{
 		margin-left:10px;
@@ -321,4 +320,10 @@ export default {
 	.el-submenu.is-active .el-submenu__title {
     border-bottom-color: #e6e6e6;
 	}
+	.el-picker-panel .el-picker-panel__link-btn{
+		margin-left:20px;
+	}
+  .el-loading-mask{
+    z-index:1000;
+  }
 </style>

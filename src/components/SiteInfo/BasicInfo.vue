@@ -5,7 +5,7 @@
     <el-input v-model="ruleForm.stnm" class="basicInput"></el-input>
   </el-form-item>
   <el-form-item label="站点编码">
-    <el-input v-model="ruleForm.stcd" class="basicInput"></el-input>
+    <el-input v-model="ruleForm.stcd" disabled class="basicInput"></el-input>
   </el-form-item>
   <el-form-item label="河道名称">
     <el-input v-model="ruleForm.rvnm" class="basicInput"></el-input>
@@ -20,8 +20,8 @@
     <el-input v-model="ruleForm.lgtd" class="basicInput LGTD TD"></el-input><span class="l" style="margin:0 4px;">,</span>
     <el-input v-model="ruleForm.lttd" class="basicInput LTTD TD"></el-input>
   </el-form-item>
-  <el-form-item label="站点类别" prop="region">
-    <el-select v-model="ruleForm.sttp" placeholder="请选择活动区域" class="basicInput">
+  <el-form-item label="站点类别" prop="region" >
+    <el-select v-model="ruleForm.sttp" placeholder="请选择活动区域" class="basicInput" disabled>
       <el-option
         v-for="item in sttpOptions"
         :key="item.value"
@@ -34,7 +34,14 @@
     <el-input v-model="ruleForm.addvcd" class="basicInput"></el-input>
   </el-form-item>
   <el-form-item label="报汛等级" prop="region">
-    <el-input v-model="ruleForm.frgrd" class="basicInput"></el-input>
+    <el-select v-model="ruleForm.frgrd" placeholder="报汛等级" class="basicInput" >
+      <el-option
+        v-for="item in frgrdOptions"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value">
+      </el-option>
+    </el-select>
   </el-form-item>
   <el-form-item label="报汛项目" prop="region">
     <el-select v-model="itemValue" multiple placeholder="请选择报汛项目" class="basicInput" size="small">
@@ -102,9 +109,25 @@ import qs from 'qs'
           bgfrym: '',
           stlc: '',
           comments: ''
-        },  
-        itemValue:[], 
-        sttpOptions:[{                    
+        },
+        itemValue:[],
+        frgrdOptions:[{
+          value: '1',
+          label: '中央报汛站'
+        }, {
+          value: '2',
+          label: '省级重点报汛站'
+        }, {
+          value: '3',
+          label: '省级一般报汛站'
+        }, {
+          value: '4',
+          label: '其他报汛站'
+        }, {
+          value: '5',
+          label: '山洪报汛站'
+        }],
+        sttpOptions:[{
           value: 'PP',
           label: '雨量站'
         }, {
@@ -122,7 +145,7 @@ import qs from 'qs'
         }, {
           value: 'EE',
           label: '蒸发站'
-        }],  
+        }],
         itemOptions: [{
           value: 'P',
           label: '雨量'
@@ -138,10 +161,10 @@ import qs from 'qs'
         }, {
           value: 'S',
           label: '墒情'
-        }],               
+        }],
         loading: false
       }
-    },  
+    },
     computed: {
       getSiteStcd() {                 //计算store中的siteStcd（stcd）
         return this.$store.state.siteStcd
@@ -232,7 +255,7 @@ import qs from 'qs'
         let siteStcd = this.$store.state.siteStcd
         if (siteStcd) {
           this.getSiteBasicInfo(siteStcd)
-        } 
+        }
       }
     },
     created: function () {
@@ -257,7 +280,7 @@ import qs from 'qs'
 	}
 	.el-form-item{
 		width:402px;
-		float:left;	
+		float:left;
 		margin-left:20px;
 	}
   .submitBtn{
@@ -273,6 +296,6 @@ import qs from 'qs'
 	}
   .TD{
     width:154px;
-  } 
-  
+  }
+
 </style>

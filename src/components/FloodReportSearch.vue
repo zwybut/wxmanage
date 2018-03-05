@@ -1,7 +1,7 @@
 <template>
 	<main class="main">
 	<h2 class="l">原报文查询</h2>
-	<div class="searchBox r">						
+	<div class="searchBox r">
 			<el-date-picker
       v-model="timer"
       type="datetimerange"
@@ -24,7 +24,7 @@
 		      :value="item.value">
 		    </el-option>
 		  </el-select>
-		  <el-input v-model="phcd" placeholder="模糊查询" class="phcd l" size="small"></el-input>
+		  <el-input v-model="phcd" placeholder="请输入人员/站名/站码" class="phcd l" size="small"></el-input>
 		  <el-button type="primary" size="small" class="l" @click="search">查询</el-button>
 		</div>
 		<el-table
@@ -52,6 +52,7 @@
       <el-table-column
         prop="stcd"
         label="站码"
+        sortable
         align="center"
         width="130"
         >
@@ -60,7 +61,7 @@
         prop="tm"
         label="时间"
         align="center"
-        sortable
+        sortable='custom'
         width="180"
         >
       </el-table-column>
@@ -82,7 +83,7 @@
         prop="modiTime"
         label="报汛时间"
         align="center"
-        sortable
+        sortable='custom'
         width="180"
         >
       </el-table-column>
@@ -109,7 +110,6 @@
           @current-change="handleCurrentChange">
 	    </el-pagination>
 	  </div>
-    </el-dialog>
       <el-dialog title="发送消息" :visible.sync="reply" width="550px">
       <el-form :model="replyForm">
         <el-form-item label="接收人员" :label-width="formLabelWidth">
@@ -177,7 +177,7 @@ export default{
           }
         }]
       },
-      timer: '',                         //时间选择器的时间
+      timer: [],                         //时间选择器的时间
       optionsSttp: [{                    //站类选择器
         value: 'PP',
         label: '雨量站'
@@ -240,7 +240,7 @@ export default{
     },
     cancleReply () {                      //取消回复
   	  this.reply = false
-  	  this.audit = false  	  
+  	  this.audit = false
   	},
     replyRow (scope) {                    //回复弹窗显示
 			let that = this
@@ -250,7 +250,7 @@ export default{
   	},
   	handleSizeChange (size) {             //选择分页器每页显示的数量
       this.pagesize = size
-    }, 
+    },
     handleCurrentChange (currentPage){    //分页器页码选择
       this.currentPage = currentPage
     },
@@ -260,7 +260,7 @@ export default{
   	  	this.getTableData(this.timer[0],this.timer[1],this.valueSttp,this.phcd)
   	  }else{
   	  	this.getTableData(null,null,this.valueSttp,this.phcd)
-  	  }  	  
+  	  }
   	},
   	deleteRow (index,val) {               //删除信息
   		console.log(val[index])
@@ -284,22 +284,44 @@ export default{
           that.$message({
             type: 'info',
             message: '删除失败'
-          })  
+          })
         })
       }).catch(() => {})
   	},
+    getNowATime (tm) {
+      let now = new Date(tm)
+      let year = now.getFullYear()
+      let month = now.getMonth()+1
+      let day = now.getDate()
+      let hour = now.getHours()
+      let minutes = now.getMinutes()
+      let seconds = now.getSeconds()
+      return year+'-'+month+'-'+day+' '+hour+':'+minutes+':'+seconds
+    },
+		time(){
+        this.timer = []
+        let now = new Date().getTime()
+        let yet = now - 1000*3600*24*3
+        this.getNowATime(yet)
+        this.getNowATime(now)
+        this.timer = [this.getNowATime(yet),this.getNowATime(now)]
+        setTimeout(() => {
+          this.getTableData(this.getNowATime(yet), this.getNowATime(now),null,null)
+        }, 30);
+
+    },
   	getTableData (startTime, endTime, sttp, phcd) {             //获取报汛table数据
     this.tableData = []
   	  this.tableloading = true
       let that = this
       console.log(startTime, endTime, sttp, phcd)
       this.$http.post(this.baseUrl + 'BXInfo/RGBX_RPT', qs.stringify({startTm: startTime, endTm: endTime, sttp: sttp, phcd: phcd}))
-      .then(function (res) {
+      .then((res) => {
       	 console.log(res)
       	if(res.data.code === 0 ){
       	  // console.log(res.data.data)
           let data = res.data.data
-          that.total = data.length  
+          that.total = data.length
           let arr = []
           if(data.length){
             for (var i = 0; i < data.length; i++) {
@@ -307,18 +329,19 @@ export default{
               obj.realName = data[i].realName
               obj.stnm = data[i].stnm
               obj.stcd = data[i].stcd
-              obj.tm = that.timeTrans(data[i].tm) 
-              obj.sttp = data[i].sttp
+              obj.tm = that.timeTrans(data[i].tm)
+							obj.sttp = this.sttpTransform(data[i].sttp)
+
               obj.rptContent = data[i].rptContent
-              obj.modiTime = that.timeTrans(data[i].modiTime)                          
+              obj.modiTime = that.timeTrans(data[i].modiTime)
               obj.id = data[i].id
               arr.push(obj)
             }
             that.tableData = arr
           }
-      	}        
+      	}
       	that.tableloading = false
-      }).catch(function (err) {
+      }).catch((err) => {
         console.log(err)
       })
     },
@@ -331,7 +354,7 @@ export default{
   },
   created: function () {
     this.activeMenu()
-  	this.getTableData(null, null, null, null)
+		this.time()
   	this.getClientHeight()
   }
 }

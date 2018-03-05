@@ -32,15 +32,15 @@
 		</div>
 		<div class='mainR l'>
 			<div separator="/" class="breadcrumb">
-				<span>{{third}}</span> ( <span>{{first}}</span> · <span>{{second}}</span> ) 
+				<span>{{third}}</span> ( <span>{{first}}</span> · <span>{{second}}</span> )
 			</div>
 			<el-menu :default-active="activeIndex"
 				class="el-menu-demo"
 				mode="horizontal"
 				active-text-color="#fff">
-			  <el-menu-item index="1"><router-link to="/SiteInfo/BasicInfo" class="tabs">基本站点信息</router-link></el-menu-item>
+			  <el-menu-item index="1"><router-link to="/SiteInfo/BasicInfo" class="tabs">基本信息</router-link></el-menu-item>
 			  <el-menu-item index="2"><router-link to="/SiteInfo/FloodProjectCustom" class="tabs">报汛项目定制</router-link></el-menu-item>
-			  <el-menu-item index="3"><router-link to="/SiteInfo/FloodNumOption" class="tabs">报汛数值设置</router-link></el-menu-item>
+			  <el-menu-item index="3"><router-link to="/SiteInfo/FloodNumOption" class="tabs">汛情阈值</router-link></el-menu-item>
 			</el-menu>
 			<router-view></router-view>
 		</div>
@@ -67,14 +67,14 @@ export default{
 			second: '',													//站点类别
 			third: ''														//站点名称
     }
-    
+
 	},
 	watch: {
 		tree_input:{  								//监听tree搜索
 			handler:function(val,oldval){
 				this.$refs.tree.filter(val)
 			}
-		}, 
+		},
 	},
   methods: {
 		filterNode(value, data) {
@@ -126,13 +126,13 @@ export default{
 						sttp = sttp.slice(0,1)
 						var stcdTree = {label:stationList[j].stnm,stcd:stationList[j].stcd,sttp:stationList[j].sttp,district:stationList[j].xian,item:stationList[j].item}
 						switch(sttp){
-							case "P" : 
+							case "P" :
 								sttpTree[0].children.push(stcdTree)
 								break
-							case "R" : 
+							case "R" :
 								sttpTree[1].children.push(stcdTree)
 								break
-							case "Z" : 
+							case "Z" :
 								sttpTree[2].children.push(stcdTree)
 								break
 							case "D" :
@@ -144,8 +144,8 @@ export default{
 							case "E" :
 								sttpTree[5].children.push(stcdTree)
 								break
-						}		
-					}	
+						}
+					}
 					for (let i = 0;i < sttpTree.length; i++) {
 						if(!sttpTree[i].children.length){
 							sttpTree.splice(i,1)
@@ -160,7 +160,7 @@ export default{
 				let show = second[0].label
 				let STTP = second[0].sttp
 				let STCD = second[0].stcd
-				this.showNode.push(show) 			
+				this.showNode.push(show)
 				setTimeout(()=>{
 					this.first = treeData[0].label
 					this.second = first[0].label

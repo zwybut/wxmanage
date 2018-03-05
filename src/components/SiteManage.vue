@@ -27,7 +27,7 @@
 		</div>
 		<div class='mainC l'>
 			<div class="mainCTitle title">
-				<span>用户报汛站点</span>
+				<span>用户报汛站点 ( 关注站点 : {{Num1}} 我的报汛 : {{Num2}} )</span>
 				<el-button size="small" class="allDeleteBtn" @click="deleteAllSite" type="danger" plain>删除全部</el-button>
 			</div>
 			<div class="mainCContent content">
@@ -41,7 +41,7 @@
 			    v-loading="tableloading"
 			    element-loading-text="拼命加载中"
 				element-loading-spinner="el-icon-loading"
-				element-loading-background="rgba(255, 255, 255, 1)">	    
+				element-loading-background="rgba(255, 255, 255, 1)">
 			    <el-table-column
 			      align="center"
 			      prop="stcd"
@@ -66,7 +66,7 @@
 			      prop="district"
 			      label="县区"
 			      align="center">
-			      </el-table-column>  
+			      </el-table-column>
 			      	<el-table-column
 			      prop="mine"
 			      label="我的报汛"
@@ -75,21 +75,21 @@
 			      	 <template slot-scope="scope">
 				        <el-checkbox v-model='scope.row.mine' @change="checkChange(scope)" class="myFlood"></el-checkbox>
 				     </template>
-			      </el-table-column>	      
+			      </el-table-column>
 			      <el-table-column
 			      label="删除"
 			      align="center">
 			      	 <template slot-scope="scope">
 				        <el-button type="text" size="small" class="deleteBtn" @click="deleteSite(scope)"></el-button>
 				     </template>
-			      </el-table-column>			     
+			      </el-table-column>
 			    </el-table-column>
 			  </el-table>
 			</div>
 		</div>
 		<div class='mainR l'>
 			<div class="mainRTitle title">
-				<span>添加报汛站点</span>	
+				<span>添加报汛站点</span>
 				<el-popover
 				ref="popover1"
 				placement="left"
@@ -140,17 +140,17 @@
 	export default{
 	  name: 'SiteManage',
 	  data () {
-	    return {	
+	    return {
 			userList: [],			//用户列表数据
 			tableData: [],			//用户关注站点table
 	      	props: {				//table 配置属性
 			label: 'label',
 			children: 'children'
 		  	},
-			openId: '',				
+			openId: '',
 			treeNode: [],			//tree数据
 			hadChecked: {},			//用户已关注站点hash
-			tableloading: false,	
+			tableloading: false,
 			listloading: false,
 			treeloading: false,
 			clientHeight: 0,		//table可视区高度 用来切头
@@ -162,11 +162,13 @@
 				name: '',
 				content: ''
 			},
-			formLabelWidth: '72px'
+			formLabelWidth: '72px',
+			Num1:0,
+			Num2:0
 			}
 		},
 		methods: {
-			sureReply () {												//审核弹出框提交操作	  
+			sureReply () {												//审核弹出框提交操作
 				let openId = this.openId
 				let content = this.replyForm.content
 				this.$http.post(this.baseUrl+'WXUser/wxuser/' + openId, qs.stringify({'data': content}))
@@ -191,7 +193,7 @@
 				})
 			},
 			cancleReply () {										//弹出框取消按键操作
-				this.reply = false	  
+				this.reply = false
 			},
 			filterNode (value, data) {
 				if (!value) return true;
@@ -212,26 +214,26 @@
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					type: type
-				}).then(() => {	
+				}).then(() => {
 					let openId = this.openId					//将tree中选择的站点添加到关注站点中
 					this.tableloading = true
 					this.treeloading = true
 					for (var i = 0;i < this.getCheckedKeys.length; i++) {
 						let stcd = this.getCheckedKeys[i]
 						this.$http.post(this.baseUrl + 'stationConfig/rgbx_user', qs.stringify({stcd: stcd, openId: openId}))
-						.then((res) => {						
+						.then((res) => {
 							if(res.data.code === 0){
 								this.$message({
 									type: 'success',
 									message: '添加成功'
 								})
-								
+
 							}else{
 								this.$message({
 									type: 'info',
 									message: '添加失败'
 								})
-							}											
+							}
 						}).catch((err) => {
 							console.log(err)
 							this.$message({
@@ -241,8 +243,8 @@
 						})
 					}
 					setTimeout(() => {
-						this.getTableData (openId) 
-						this.$refs.tree.setCheckedNodes([])											
+						this.getTableData (openId)
+						this.$refs.tree.setCheckedNodes([])
 					}, 1000)
 				}).catch(() => {})
 			},
@@ -266,15 +268,15 @@
 							this.$message({
 								type: 'info',
 								message: '删除失败'
-							}); 
+							});
 						}
 					}).catch((err) => {
 						console.log(err)
 						this.$message({
 							type: 'info',
 							message: '删除失败'
-						}); 
-					})	
+						});
+					})
 				}).catch(() => {})
 			},
 			deleteSite (scope) {								//删除用户关注站点
@@ -302,21 +304,21 @@
 						this.$message({
 							type: 'info',
 							message: '删除失败'
-						}); 
+						});
 					}
 				}).catch((err) => {
 					console.log(err)
 					this.$message({
 						type: 'info',
 						message: '删除失败'
-					}); 
-				})				
+					});
+				})
 			}).catch(() => {})
-			},	
+			},
 			checkChange (scope) {								//添加取消我的报汛
 				let stcd = scope.row.stcd
 				let openId = this.openId
-				let poiType = scope.row.mine === true ? 1 : 0     
+				let poiType = scope.row.mine === true ? 1 : 0
 				console.log(scope)
 				this.$http.patch(this.baseUrl + 'stationConfig/rgbx_user', qs.stringify({stcd: stcd, openId: openId, poiType: poiType}))
 				.then((res) => {
@@ -337,14 +339,14 @@
 						this.$message({
 							type: 'info',
 							message: '操作失败'
-						}) 
+						})
 					}
 				}).catch((err) => {
 					console.log(err)
 					this.$message({
 						type: 'info',
 						message: '操作失败'
-					}) 
+					})
 				})
 			},
 			treeCheckChange (data, checked, indeterminate) {				//获取treexuan选中的叶子节点存到getCheckedKeys中
@@ -360,7 +362,7 @@
 					for (let i = 0; i < data.length; i++) {
 						var shi = data[i].shi
 						if(resultData[shi]){
-							resultData[shi].push(data[i])								
+							resultData[shi].push(data[i])
 						}
 						else{
 							var shiData = []
@@ -385,13 +387,13 @@
 							sttp = sttp.slice(0,1)
 							var stcdTree = {label:stationList[j].stnm,stcd:stationList[j].stcd,sttp:stationList[j].sttp,district:stationList[j].xian,item:stationList[j].item}
 							switch(sttp){
-								case "P" : 
+								case "P" :
 									sttpTree[0].children.push(stcdTree)
 									break
-								case "R" : 
+								case "R" :
 									sttpTree[1].children.push(stcdTree)
 									break
-								case "Z" : 
+								case "Z" :
 									sttpTree[2].children.push(stcdTree)
 									break
 								case "D" :
@@ -403,7 +405,7 @@
 								case "E" :
 									sttpTree[5].children.push(stcdTree)
 									break
-							}		
+							}
 						}
 						for (let i = 0;i < sttpTree.length; i++) {
 							if(!sttpTree[i].children.length){
@@ -426,22 +428,30 @@
 					let  arrForTree= {}
 					let tableData = []
 					this.tableData = []
+					let Num1 = 0
+					let Num2 = 0
 					for (let i = 0;i < data.length;i++) {
+						Num1 ++
 						let obj = {}
 						obj.addvcd = data[i].addvcd
 						obj.stcd = data[i].stcd
 						obj.stnm = data[i].stnm
-						obj.sttp = data[i].sttp
+						obj.sttp = this.sttpTransform(data[i].sttp)
 						obj.district = data[i].xian
 						obj.item = data[i].item
 						obj.mine = data[i].poiType === 1? true : false
 						tableData.push(obj)
 						arrForTree[data[i].stcd] = ''
+						if(data[i].poiType == 1){
+							Num2 ++
+						}
 					}
+					this.Num1 = Num1
+					this.Num2 = Num2
 					this.tableData = tableData
 					this.hadChecked = arrForTree    			//用户已关注站点的hash存储至hadChecked
 					this.tableloading = false
-					
+
 				}
 			},
 			choose ($event) {								//用户点击切换
@@ -457,7 +467,7 @@
 				this.openId = openId
 				this.replyForm.name = nodeChild.children[1].innerHTML
 				this.getTableData (openId)
-				
+
 			},
 			getTableData (openId) {							//获取用户关注站点table
 				this.tableloading = true
@@ -481,31 +491,36 @@
 					let openId = nodeChild.children[0].innerHTML
 					console.log(openId)
 					this.openId = openId
-					this.listloading = false
-					this.getTableData (openId)						
-				}						
+
+					this.getTableData (openId)
+				}
 			},
 			getUserList (phcd) {						//获取用户列表
 				this.$http.post(this.baseUrl + 'WXUser/wxuser', qs.stringify({addvcd: null, sex: null, state: null, phcd: phcd}))
 				.then((res) => {
+					this.listloading = false
 					console.log(res.data)
 					let data = res.data.data
-					this.total = data.length      
+					this.total = data.length
 					let arr = []
 					for (var i = 0; i < data.length ; i++) {
-						let obj = {}
-						obj.realName = data[i].realName
-						obj.department = data[i].department
-						obj.addvcd = data[i].addvcd
-						obj.sex = data[i].sex
-						obj.cellPhone = data[i].cellPhone
-						obj.comment = data[i].comment
-						obj.openId = data[i].openId
-						arr.push(obj)
+						console.log(data[i].state)
+						if(data[i].state != 0&&data[i].state != -2){
+							console.log(data[i].state + "！！！！！！！！！！")
+							let obj = {}
+							obj.realName = data[i].realName
+							obj.department = data[i].department
+							obj.addvcd = data[i].addvcd
+							obj.sex = data[i].sex
+							obj.cellPhone = data[i].cellPhone
+							obj.comment = data[i].comment
+							obj.openId = data[i].openId
+							arr.push(obj)
+						}
 					}
 					this.userList = arr
 					setTimeout(() => {
-						this.showFirstUser()		
+						this.showFirstUser()
 					}, 100)
 				}).catch(function (err) {
 					console.log(err)
@@ -520,16 +535,16 @@
 				handler:function(val,oldval){
 					this.getUserList(val)					//根据输入获取用户列表
 				}
-			},  
+			},
 			tree_input:{  								//监听tree搜索
 				handler:function(val,oldval){
 					this.$refs.tree.filter(val)
 				}
-			},  
+			},
 		},
 		created: function () {
 			this.listloading = true
-			this.activeMenu()								
+			this.activeMenu()
 			this.getUserList()												//通过函数获取
 			this.getClientHeight()
 		}
@@ -543,17 +558,17 @@
 	}
 	.mainL{
 		width:300px;
-		height:100%;	
+		height:100%;
 	}
 	.mainC{
-		width:calc(100% - 560px - 40px);	
+		width:calc(100% - 560px - 40px);
 		margin-left:20px;
-		height:100%;	
+		height:100%;
 	}
 	.mainR{
-		width:260px;	
+		width:260px;
 		margin-left:20px;
-		height:100%;	
+		height:100%;
 	}
 	.title{
 		height:38px;

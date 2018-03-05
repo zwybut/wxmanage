@@ -38,7 +38,7 @@
 		<p>版权所有 微信管理系统 ©Copyright 2003-2015. All Rights Reserved.</p>
 		<p>浙ICP备15010216号-1</p>
 	</footer>
-	</div>	
+	</div>
 </template>
 
 <script>
@@ -101,7 +101,7 @@ export default{
   },
   methods: {
     codeChange () {
-      this.codeSrc = this.baseUrl + 'util/code?tm=' + new Date().getTime()
+      this.codeSrc = this.notAuthUrl + 'util/code?tm=' + new Date().getTime()
     },
     getTime () {
       let todayDate = new Date()
@@ -146,7 +146,7 @@ export default{
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.numberValidateForm.passWord)
-          this.$http.post(this.baseUrl + 'util/'+this.numberValidateForm.userName+'/login/'+this.numberValidateForm.code, qs.stringify({password: this.numberValidateForm.passWord}))
+          this.$http.post(this.notAuthUrl + 'util/'+this.numberValidateForm.userName+'/login/'+this.numberValidateForm.code, qs.stringify({password: this.numberValidateForm.passWord}))
           .then(function (res) {
             let code = res.data.code
             if (code === 0) {
@@ -187,7 +187,7 @@ export default{
     // this.setTime()
     let sStorage = window.sessionStorage					//清除sessionStorage中的用户名
     sStorage.clear()
-    this.codeSrc = this.baseUrl + 'util/code?tm=' + new Date().getTime()
+    this.codeSrc = this.notAuthUrl + 'util/code?tm=' + new Date().getTime()
   }
 }
 </script>

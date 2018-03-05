@@ -1,7 +1,7 @@
 <template>
 	<main class="main">
 	<h2 class="l">数据查询</h2>
-	<div class="searchBox r clear">	
+	<div class="searchBox r">	
 		<el-select v-model="valueAddvcd" placeholder="数据源选择" size="small" class="l select">
 		    <el-option
 		      v-for="item in optionsAddvcd"

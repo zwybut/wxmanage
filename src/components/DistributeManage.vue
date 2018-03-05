@@ -6,14 +6,13 @@
 			</div>
 			<div class="mainLContent content">
 			<el-menu
-				default-active="1-1"
 				class="distribute_menu"
 				unique-opened
 				@open="open"
 				@close="open"
 				@select="select"
 				:default-openeds="openedsMenuNode"
-				:default-active="activeMenuNode"
+				:default-active = 'activeMenuNode'
 				>
 				<el-submenu v-for="(item,index) in fatherNode" :key="index" :index="item.id" >
 					<div slot="title" style="position:relative">
@@ -25,11 +24,11 @@
 							<el-tooltip class="item" effect="dark" content="删除客户端组" placement="top">
 							<span class="menubtn delete" @click="groupDeleteEvent"></span>
 							</el-tooltip>
-							
-							
+
+
 						</div>
 					</div>
-					<div  
+					<div
 					v-loading="childloading"
 					element-loading-text="拼命加载中"
 					element-loading-spinner="el-icon-loading"
@@ -37,7 +36,7 @@
 						<el-menu-item v-for="(item,index) in childrenNode" :key="index" :index="item.nId" class="usingItem unitList clear" >
 							<i class="num">{{parseInt(index)+1}}</i>
 							<div class="menu_content clear l">
-								<span class="unitName">{{item.nName}}</span><span class="dateTime">{{item.lastTm}}</span><span>{{item.edition}}</span>						
+								<span class="unitName">{{item.nName}}</span><span class="dateTime">{{item.lastTm}}</span><span>{{item.edition}}</span>
 							</div>
 							<div class="menu_btns l">
 								<el-tooltip class="item" effect="dark" content="启用停用" placement="top">
@@ -49,8 +48,8 @@
 								<el-tooltip class="item" effect="dark" content="删除客户端" placement="top">
 								<span class="menubtn delete" @click="deleteEvent"></span>
 								</el-tooltip>
-								
-								
+
+
 							</div>
 						</el-menu-item>
 						<el-menu-item  :index="'add'+item.id" class="unitList addChildNode">
@@ -100,14 +99,14 @@
 						prop="xian"
 						label="县区"
 						align="center">
-					</el-table-column>      
+					</el-table-column>
 			      <el-table-column
 			      label="操作"
 			      align="center">
 			      	 <template slot-scope="scope">
 				        <el-button type="text" size="small" class="deleteBtn" @click="deleteSite(scope)"></el-button>
 				     </template>
-			      </el-table-column>		
+			      </el-table-column>
 				</el-table>
 			</div>
 		</div>
@@ -123,7 +122,7 @@
 				</el-popover>
 				<el-button v-popover:popover1 class="hiddenBtn"></el-button>
 			</div>
-			<div class="mainRContent content">			
+			<div class="mainRContent content">
 				<el-tree
 				  :data="treeNode"
 				  :props="props"
@@ -220,7 +219,7 @@
 			handler:function(val,oldval){
 				this.$refs.tree.filter(val)
 			}
-		} 
+		}
 	},
   methods: {
 	//tree节点过滤
@@ -233,7 +232,7 @@
 	//若是生成时间戳做为nId
 	//若否则调用获取该客户端table的函数
 	select (nId) {
-		this.nId = nId	
+		this.nId = nId
 		this.optionForm = {}
 		if(nId.indexOf("add") >= 0){
 			this.disabled = false
@@ -248,8 +247,8 @@
 			let Minutes = tm.getMinutes()
 			let Seconds = tm.getSeconds()
 			let Milliseconds = tm.getMilliseconds()
-			let randomId = Year.toString()+Month.toString()+Day.toString()+Hours.toString()+Minutes.toString()+Seconds.toString()+Milliseconds.toString()		
-			if(nId == 'addGroup'){	
+			let randomId = Year.toString()+Month.toString()+Day.toString()+Hours.toString()+Minutes.toString()+Seconds.toString()+Milliseconds.toString()
+			if(nId == 'addGroup'){
 				this.addGroup = true
 				this.optionForm.id = randomId
 			}else{
@@ -263,9 +262,11 @@
 		}
 	},
 	//客户端组打开时的函数，获取组内的客户端
-	open (id) {	
+	open (id) {
+		console.log(id)
+		this.childrenNode = []
 		this.optionForm = {}
-		this.childloading = true 
+		this.childloading = true
 		this.$http.get(this.baseUrl + 'nodeManage/nodeList/' + id, qs.stringify({}))
 		.then((res) => {
 			console.log(res)
@@ -274,12 +275,12 @@
 				let arr = []
 				for (let i = 0; i< data.length; i++) {
 					let obj = {}
-					obj.configTm = data[i].configTm					//配置时间				
+					obj.configTm = data[i].configTm					//配置时间
 					obj.lastTm = data[i].lastTm						//最后登陆
-					obj.nName = data[i].nName							
-					obj.nId = data[i].nId.toString()										
+					obj.nName = data[i].nName
+					obj.nId = data[i].nId.toString()
 					obj.pcId = data[i].pcId								//硬盘id
-					obj.isUsing = data[i].isUsing	
+					obj.isUsing = data[i].isUsing
 					arr.push(obj)
 				}
 				this.childrenNode = arr
@@ -291,17 +292,18 @@
 						this.optionForm.name = this.fatherNode[j].name
 					}
 				}
-				this.childloading = false 
-				setTimeout(() => {
+				this.childloading = false
+				 setTimeout(() => {
 					if(data[0]){
 						this.activeNode = data[0].nId
 						this.nId = data[0].nId
-					}	
-				}, 30)
+
+					}
+				}, 300)
 			}
 		}).catch((err) => {
 			console.log(err)
-		})			
+		})
 	},
 	//客户端启用停用函数
 	use (event) {
@@ -313,7 +315,7 @@
 		}else{
 			thisNode.classList.remove('true')
 			isUsing = false
-		}	
+		}
 		setTimeout(() => {
 			this.$http.put(this.baseUrl + 'nodeManage/node', qs.stringify({nId: this.nId, isUsing: isUsing}))
 			.then((res) => {
@@ -333,10 +335,10 @@
 				console.log(err)
 			})
 		}, 30)
-		
+
 	},
 	//客户端组设置函数显示设置窗
-	groupOptions (){	
+	groupOptions (){
 		this.disabled = true
 		this.addGroup = true
 		this.option = true
@@ -373,7 +375,7 @@
 	//客户端删除函数
 	options (event) {
 		setTimeout(() => {
-			this.option = true 
+			this.option = true
 			this.addGroup = false
 			let nId = this.nId
 			this.$http.get(this.baseUrl + 'nodeManage/node/' + nId, qs.stringify({}))
@@ -385,7 +387,7 @@
 			}).catch((err) => {
 				console.log(err)
 			}).catch(() => {})
-		},30)		
+		},30)
 	},
 	//设置窗提交函数
 	sureOption (){
@@ -464,7 +466,7 @@
 						})
 						this.option = false
 						console.log(this.groupId)
-						this.open(this.groupId)	
+						this.open(this.groupId)
 					}else{
 						this.$message({
 							type: 'info',
@@ -474,13 +476,13 @@
 				}).catch((err) => {
 					console.log(err)
 				})
-				
+
 			}
 		}
-			
+
 	},
 	cancleOption (){
-		this.option = false 
+		this.option = false
 	},
 	//客户端删除函数
 	deleteEvent () {
@@ -502,39 +504,6 @@
 						type: 'info',
 						message: '删除失败'
 					})
-				}	
-			}).catch((err) => {
-				console.log(err)
-				this.$message({
-					type: 'info',
-					message: '删除失败'
-				})
-			})				
-		}).catch(() => {})
-	},
-	//删除客户端下的分发站点
-  	deleteSite (scope) {
-        let stcd = scope.row.stcd
-		this.$confirm('此操作将删除该分发站点, 是否继续?', '提示', {
-			confirmButtonText: '确定',
-			cancelButtonText: '取消',
-			type: 'warning'
-		}).then(() => {
-			console.log(this.nId, stcd)
-			this.$http.delete(this.baseUrl + 'nodeManage/nodeToStcd/'+this.nId+'/'+stcd, qs.stringify({}))
-			.then((res) => {
-				console.log(res)
-				if(res.data.code == 0){
-					this.getTableData(this.nId)
-					this.$message({
-						type: 'success',
-						message: '删除成功!'
-					})
-				}else{
-					this.$message({
-						type: 'info',
-						message: '删除失败'
-					})
 				}
 			}).catch((err) => {
 				console.log(err)
@@ -542,8 +511,41 @@
 					type: 'info',
 					message: '删除失败'
 				})
-			})			
+			})
 		}).catch(() => {})
+	},
+	//删除客户端下的分发站点
+  	deleteSite (scope) {
+        let stcd = scope.row.stcd
+			this.$confirm('此操作将删除该分发站点, 是否继续?', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				type: 'warning'
+			}).then(() => {
+				console.log(this.nId, stcd)
+				this.$http.delete(this.baseUrl + 'nodeManage/nodeToStcd/'+this.nId+'/'+stcd, qs.stringify({}))
+				.then((res) => {
+					console.log(res)
+					if(res.data.code == 0){
+						this.getTableData(this.nId)
+						this.$message({
+							type: 'success',
+							message: '删除成功!'
+						})
+					}else{
+						this.$message({
+							type: 'info',
+							message: '删除失败'
+						})
+					}
+				}).catch((err) => {
+					console.log(err)
+					this.$message({
+						type: 'info',
+						message: '删除失败'
+					})
+				})
+			}).catch(() => {})
   	},
 	  //删除所有分发站点
 	deleteAllSite () {
@@ -565,19 +567,19 @@
 					this.$message({
 						type: 'info',
 						message: '删除失败'
-					}); 
+					});
 				}
 			}).catch((err) => {
 				console.log(err)
 				this.$message({
 					type: 'info',
 					message: '删除失败'
-				}); 
-			})	
+				});
+			})
 		}).catch(() => {})
 	},
 	//确定添加分发站点
-	sureChoose () {			
+	sureChoose () {
 		let massage = ''
 		let type = ''
 		console.log(this.getCheckedKeys)
@@ -593,14 +595,14 @@
 			cancelButtonText: '取消',
 			type: type
 		}).then(() => {
-		if(this.getCheckedKeys.length){		
+		if(this.getCheckedKeys.length){
 			let openId = this.openId					//将tree中选择的站点添加到关注站点中
 			this.tableloading = true
 			this.treeloading = true
 			for (var i = 0;i < this.getCheckedKeys.length; i++) {
 				let stcd = this.getCheckedKeys[i]
 				this.$http.post(this.baseUrl + 'nodeManage/nodeToStcd', qs.stringify({stcd: stcd, nId: this.nId}))
-				.then((res) => {						
+				.then((res) => {
 					console.log(res)
 					if(res.data.code === 0){
 						this.$message({
@@ -613,7 +615,7 @@
 							type: 'info',
 							message: '添加失败'
 						})
-					}											
+					}
 				}).catch((err) => {
 					console.log(err)
 					this.$message({
@@ -623,8 +625,8 @@
 				})
 			}
 			setTimeout(() => {
-				this.getTableData(this.nId) 
-				this.$refs.tree.setCheckedNodes([])			
+				this.getTableData(this.nId)
+				this.$refs.tree.setCheckedNodes([])
 			}, 1000)
 			 			//刷新用户关注站点table
 		}
@@ -669,13 +671,13 @@
 					sttp = sttp.slice(0,1)
 					var stcdTree = {label:stationList[j].stnm,stcd:stationList[j].stcd,sttp:stationList[j].sttp,district:stationList[j].xian,item:stationList[j].item}
 					switch(sttp){
-						case "P" : 
+						case "P" :
 							sttpTree[0].children.push(stcdTree)
 							break
-						case "R" : 
+						case "R" :
 							sttpTree[1].children.push(stcdTree)
 							break
-						case "Z" : 
+						case "Z" :
 							sttpTree[2].children.push(stcdTree)
 							break
 						case "D" :
@@ -687,7 +689,7 @@
 						case "E" :
 							sttpTree[5].children.push(stcdTree)
 							break
-					}		
+					}
 				}
 				for (let i = 0;i < sttpTree.length; i++) {
 					if(!sttpTree[i].children.length){
@@ -703,7 +705,7 @@
         console.log(err)
       })
     },
-    addStationToList (val) { 
+    addStationToList (val) {
       if (val.data.code === 0) {
         let data = val.data.data
         let arr = []
@@ -719,8 +721,8 @@
           arrForTree[data[i].stcd] = ''
         }
         this.tableData = tableData
-		this.hadChecked = arrForTree   
-		this.getTreeNode() 
+				this.hadChecked = arrForTree
+				this.getTreeNode()
         this.tableloading = false
       }
     },
@@ -743,7 +745,8 @@
 	},
 	//获取客户端组s
 	getGroupAtBegin () {
-		this.activeMenuNode = ''
+		this.openedsMenuNode = []
+		// this.activeMenuNode = ''
 		this.tableloading = true
 		this.treeloading = true
 		this.$http.get(this.baseUrl + 'nodeManage/nodeGroup', qs.stringify({}))
@@ -751,8 +754,12 @@
 			if(res.data.code == 0){
 				let data = res.data.data
 				let arr = []
+				console.log(data)
+				console.log(data[0].id)
 				this.open(data[0].id)
-				this.openedsMenuNode[0] = data[0].id
+
+				console.log(this.openedsMenuNode[0])
+
 				for (let i = 0; i< data.length; i++) {
 					let obj = {}
 					obj.name = data[i].name
@@ -760,10 +767,12 @@
 					arr.push(obj)
 				}
 				this.fatherNode = arr
+
 				setTimeout(() => {
+					this.getTableData(this.activeNode)
 					this.activeMenuNode = this.activeNode
-					this.getTableData(this.activeNode)	
-				}, 1000)	
+					this.openedsMenuNode.push(data[0].id)
+				}, 1000)
 			}
 		}).catch((err) => {
 			console.log(err)
@@ -771,9 +780,10 @@
 	}
   },
   created: function () {
-	this.activeMenu()	
+	this.activeMenu()
 	this.getGroupAtBegin()
 	this.getClientHeight()
+	console.log(this.openedsMenuNode)
   }
 }
 </script>
@@ -785,17 +795,17 @@
 	}
 	.mainL{
 		width:390px;
-		height:100%;	
+		height:100%;
 	}
 	.mainC{
-		width:calc(100% - 560px - 40px - 90px);	
+		width:calc(100% - 560px - 40px - 90px);
 		margin-left:20px;
-		height:100%;	
+		height:100%;
 	}
 	.mainR{
-		width:260px;	
+		width:260px;
 		margin-left:20px;
-		height:100%;	
+		height:100%;
 	}
 	.title{
 		height:38px;
@@ -816,7 +826,7 @@
 	}
 	.distribute_menu{
 		width:calc(100% - 36px);
-		margin-left:18px;		
+		margin-left:18px;
 		height:calc(100% - 36px);
 		margin-top:18px;
 		border:1px solid #e6e6e6;
@@ -888,7 +898,7 @@
 	.menu_btns .delete{
 		background:url(../assets/distribute_delete.png)no-repeat center;
 	}
-	
+
 	.menu_btns .use:hover,.el-menu-item.is-active .use{
 		background:url(../assets/distribute_off_active.png)no-repeat center;
 	}

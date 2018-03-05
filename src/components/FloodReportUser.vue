@@ -1,6 +1,6 @@
 <template>
 	<main class='main'>
-		<div class="l titleL"><h2>报汛用户管理</h2></div>	
+		<div class="l titleL"><h2>报汛用户管理</h2></div>
 		<div class="r titleR">
 			<el-cascader
 		    expand-trigger="hover"
@@ -28,7 +28,7 @@
 		      :value="item.value">
 		    </el-option>
 		  </el-select>
-		  <el-input size="small" class='phcd l' v-model="phcd" placeholder="请输入内容"></el-input>		
+		  <el-input size="small" class='phcd l' v-model="phcd" placeholder="请输入用户名/单位/手机号"></el-input>
 		  <el-button class="searchBtn l" size="small" type="primary" @click='change'>查询</el-button>
 		</div>
 		<div class="l table">
@@ -79,6 +79,7 @@
 	      </el-table-column>
 	      <el-table-column
 	        prop="state"
+					sortable
 	        label="审核状态"
 	        align="center">
 					 <!-- <template slot-scope="scope">
@@ -189,7 +190,7 @@ export default{
       auditForm: {				//审核弹出框对象
       	name: '',
         status:'',				//审核状态
-        openId:'',				
+        openId:'',
         id: ''
       },
       formLabelWidth: '72px',	//弹出框表单label统一宽度
@@ -214,11 +215,11 @@ export default{
 					return 'fail-cell'
 				}
 				return ''
-			}  
+			}
     },
   	handleSizeChange (size) { 				//改变分页器每页显示数量
       this.pagesize = size
-    }, 
+    },
     handleCurrentChange (currentPage){ 				//分页器换页
       this.currentPage = currentPage
     },
@@ -233,7 +234,7 @@ export default{
 				.then((res) => {
 					console.log(res)
 					if (res.data.code == 0) {
-						this.change() 
+						this.change()
 						this.$message({
 							type: 'success',
 							message: '审核已完成'
@@ -256,7 +257,7 @@ export default{
 				.then((res) => {
 					console.log(res)
 					if (res.data.code === 0) {
-						this.change() 
+						this.change()
 						this.$message({
 							type: 'success',
 							message: '回复成功！'
@@ -274,7 +275,7 @@ export default{
   	},
   	cancleReply () {										//弹出框取消按键操作
   	  this.reply = false
-  	  this.audit = false  	  
+  	  this.audit = false
   	},
   	auditRow (scope) {									//三种按键分类（启用、停用、审核）
   	  this.auditForm.name = scope.row.realName
@@ -307,7 +308,7 @@ export default{
 							this.$message({
 								type: 'success',
 								message: sureMessage
-							})	
+							})
 						}else{
 							this.$message({
 								type: 'info',
@@ -333,9 +334,9 @@ export default{
   	},
     deleteRow (scope) {										//删除按键
       this.$confirm('此操作将永久删除该报汛用户, 是否继续?', '删除提示', { cancelButtonText: '取消', confirmButtonText: '确定', type: 'warning'})
-      .then(() => { 
+      .then(() => {
         let openId = scope.row.openId
-        console.log(openId)			
+        console.log(openId)
         this.$http.delete(this.baseUrl + 'WXUser/wxuser/' + openId, qs.stringify({}))
         .then((res) => {
 					console.log(res)
@@ -373,11 +374,11 @@ export default{
       })
     },
     getTableBagin (addvcd, sex, state, phcd) {  										//获取table数据函数
-			this.tableloading = true																			
+			this.tableloading = true
       this.$http.post(this.baseUrl + 'WXUser/wxuser', qs.stringify({addvcd: addvcd, sex: sex, state: state, phcd: phcd}))
       .then((res) => {
         let data = res.data.data
-        this.total = data.length      
+        this.total = data.length
         let arr = []
         for (var i = 0; i < data.length ; i++) {
           let obj = {}
@@ -397,7 +398,7 @@ export default{
 							obj.word = '审核'
               break
             case '-1': str = '停用'
-							obj.word = '启用'	
+							obj.word = '启用'
               break
             case '-2': str = '审核未通过'
 							obj.word = '审核'
@@ -413,12 +414,12 @@ export default{
       }).catch(function (err) {
         console.log(err)
       })
-		},	
+		},
 		getClientHeight () {													//获取table可视区高度
-			this.clientHeight = this.getClientAtBegin()		
+			this.clientHeight = this.getClientAtBegin()
 		}
   },
-  created: function () {	
+  created: function () {
 		this.getTableBagin(null, null, null, null)
 		this.postData()
 		this.getClientHeight()
@@ -438,7 +439,7 @@ export default{
 	}
 	.select{
 		width:160px;
-		margin-left:18px;	
+		margin-left:18px;
 	}
 	.phcd{
 		width:190px;
