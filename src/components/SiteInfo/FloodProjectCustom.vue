@@ -457,6 +457,7 @@ import qs from 'qs'
 					if (res.data.code === 0) {
 						this.dataloading = false
 						let data = res.data.data
+						console.log(data)
 						if(data.length){
 							let objName = this.transListName(data[0].sttp)
 							let key

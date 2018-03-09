@@ -49,6 +49,19 @@ export default {
 		  activeMenu: '1'           //设置header默认选中为报汛用户查询
 		}
 	},
+    computed: {
+      active() {                 //activeMenu
+        return this.$store.state.activeMenu
+      }
+    },
+    watch: {
+      active(val){                 //监听
+        if (val) {
+					console.log(val)
+          this.setActiveMenu()      
+        }
+      }
+    },
   methods: {
     showHeader () {							//控制header是否显示
       return this.$store.state.show
@@ -212,6 +225,9 @@ export default {
 	.el-table__body-wrapper {
 		overflow-x:hidden;
 	}
+	.el-table__row td{
+		padding:6px 0;
+	}
 	.optionForm .el-form-item{
 		float:left;
 	}
@@ -326,4 +342,22 @@ export default {
   .el-loading-mask{
     z-index:1000;
   }
+	div::-webkit-scrollbar{  
+        width:6px;  
+        height:4px;  
+	}  
+	div::-webkit-scrollbar-track{  
+			background: #f6f6f6;  
+			border-radius:2px;  
+	}  
+	div::-webkit-scrollbar-thumb{  
+			background: #aaa;  
+			border-radius:2px;  
+	}  
+	div::-webkit-scrollbar-thumb:hover{  
+			background: #747474;  
+	}  
+	div::-webkit-scrollbar-corner{  
+			background: #f6f6f6;  
+	}  
 </style>

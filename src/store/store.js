@@ -8,12 +8,18 @@ export const store = new Vuex.Store({
         loginName: '', //登陆用户名
         activeMenu: '1', //当前默认选中的页面
         siteStcd: '', //选中的站点stcd
-        siteSttp: '' //选中的站点sttp
+        siteSttp: '', //选中的站点sttp
+        userOption: false,
+        userObj: {},
+        siteOption: false,
+        siteObj: {},
+        addSite: false
     },
     getters: {
         getUser: state => state.floodReportUser
     },
     mutations: {
+
         siteStcd: (state, siteStcd) => {
             state.siteStcd = siteStcd
         },
@@ -31,6 +37,21 @@ export const store = new Vuex.Store({
         },
         activeMenu: (state, activeMenu) => {
             state.activeMenu = activeMenu
-        }
+        },
+        userOption: (state, userOption) => {
+            state.userOption = userOption
+        },
+        siteOption: (state, siteOption) => {
+            state.siteOption = siteOption
+        },
+        userObj: (state, userObj) => {
+            state.userObj = userObj
+        },
+        siteObj: (state, siteObj) => {
+            state.siteObj = siteObj
+        },
+        addSite: (state, addSite) => {
+            state.addSite = addSite
+        },
     }
 })

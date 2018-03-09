@@ -12,14 +12,6 @@
 		     clearable
 		     placeholder="地区选择">
 		  </el-cascader>
-		  <el-select size="small" v-model="sex" placeholder="性别选择" class='select l' @change="change" clearable>
-		    <el-option
-		      v-for="item in sixChoose"
-		      :key="item.value"
-		      :label="item.label"
-		      :value="item.value">
-		    </el-option>
-		  </el-select>
 		  <el-select size="small" v-model="state" placeholder="用户状态" class='select l' @change="change" clearable>
 		    <el-option
 		      v-for="item in userStatus"
@@ -33,6 +25,7 @@
 		</div>
 		<div class="l table">
 			<el-table
+			stripe
 	      :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
 	      style="width: 100%"
 				:cell-class-name="tableCellClassName"
@@ -98,6 +91,7 @@
 	        <template slot-scope="scope">
 		        <el-button type="text" size="small" @click="auditRow(scope)">{{scope.row.word}}</el-button>
 		        <el-button type="text" size="small" @click="replyRow(scope)">回复</el-button>
+						<el-button type="text" size="small" @click="optionRow(scope)">配置</el-button>
 		        <el-button type="text" size="small" @click="deleteRow(scope)">删除</el-button>
 		      </template>
 	      </el-table-column>
@@ -196,7 +190,7 @@ export default{
       formLabelWidth: '72px',	//弹出框表单label统一宽度
       total: 333,					//分页器显示总条数
       currentPage:1, 			//设置分页器默认显示第几页
-      pagesize:10, 				//设置分页器默认每页显示数
+      pagesize:20, 				//设置分页器默认每页显示数
 			trueBoolen: true,		//为true的布尔值
 			clientHeight: 0,		//table可视区高度
 			tableloading:false	//table载入动画
@@ -325,6 +319,13 @@ export default{
 				}).catch((err) => {})
 			}
   	},
+		optionRow (scope) {
+			console.log(scope)
+			this.$store.commit('userOption',true)
+			this.$store.commit('userObj',scope.row)
+			this.$router.push('/SiteManage')
+			this.$store.commit('activeMenu', '2')
+		},
   	replyRow (scope) {										//回复按键
 			console.log(scope)
   	  this.reply = true
@@ -420,6 +421,8 @@ export default{
 		}
   },
   created: function () {
+		this.$store.commit('activeMenu', '1')
+		this.$store.commit('userOption',false)
 		this.getTableBagin(null, null, null, null)
 		this.postData()
 		this.getClientHeight()

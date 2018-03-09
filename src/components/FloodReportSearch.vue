@@ -31,6 +31,7 @@
       :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
       style="width: 100%;margin-top:20px"
       class="l table"
+      stripe
       :height="clientHeight"
       v-loading="tableloading"
      element-loading-text="拼命加载中"

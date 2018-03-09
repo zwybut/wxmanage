@@ -5,6 +5,7 @@
 		<el-table
 			:data="tableData"
 			style="width: 100%"
+			stripe
 			:height="clientHeight"
 			v-loading="tableloading"
 			element-loading-text="拼命加载中"

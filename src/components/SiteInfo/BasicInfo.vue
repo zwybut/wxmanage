@@ -5,7 +5,7 @@
     <el-input v-model="ruleForm.stnm" class="basicInput"></el-input>
   </el-form-item>
   <el-form-item label="站点编码">
-    <el-input v-model="ruleForm.stcd" disabled class="basicInput"></el-input>
+    <el-input v-model="ruleForm.stcd" class="basicInput"></el-input>
   </el-form-item>
   <el-form-item label="河道名称">
     <el-input v-model="ruleForm.rvnm" class="basicInput"></el-input>
@@ -21,7 +21,7 @@
     <el-input v-model="ruleForm.lttd" class="basicInput LTTD TD"></el-input>
   </el-form-item>
   <el-form-item label="站点类别" prop="region" >
-    <el-select v-model="ruleForm.sttp" placeholder="请选择活动区域" class="basicInput" disabled>
+    <el-select v-model="ruleForm.sttp" placeholder="请选择活动区域" class="basicInput" >
       <el-option
         v-for="item in sttpOptions"
         :key="item.value"
@@ -166,14 +166,25 @@ import qs from 'qs'
       }
     },
     computed: {
+      addSite (){
+        return this.$store.state.addSite
+      },
       getSiteStcd() {                 //计算store中的siteStcd（stcd）
         return this.$store.state.siteStcd
       }
     },
     watch: {
+      addSite (val) {
+        if(val){
+          this.ruleForm = {}
+          this.itemValue = []
+          
+
+        }
+      },
       getSiteStcd(val){                 //监听stcd的变化
         if (val) {
-          this.getSiteBasicInfo(val)      //触发获取站点基础信息的函数
+          this.getSiteBasicInfo(val)      //触发获取站点基础信息的函数 
         }
       }
     },
@@ -225,31 +236,54 @@ import qs from 'qs'
       changed () {                            //修改站点基础信息后提交的函数
         this.loading = true
         let ruleForm = JSON.parse(JSON.stringify(this.ruleForm))
-        ruleForm.esstym = ruleForm.esstym.split('-')[0]+ruleForm.esstym.split('-')[1]
-        ruleForm.bgfrym = ruleForm.bgfrym.split('-')[0]+ruleForm.bgfrym.split('-')[1]
-        ruleForm.item = this.itemValue.join('')
-        this.$http.put(this.baseUrl + 'stationInfo/stationBaseInfo/', qs.stringify(ruleForm))
-        .then((res) => {
-          if(res.data.code === 0){
-            this.loading = false
+          if(ruleForm.esstym) ruleForm.esstym = ruleForm.esstym.split('-')[0]+ruleForm.esstym.split('-')[1]
+          if(ruleForm.bgfrym) ruleForm.bgfrym = ruleForm.bgfrym.split('-')[0]+ruleForm.bgfrym.split('-')[1]
+          ruleForm.item = this.itemValue.join('')
+        if(this.$store.state.addSite){
+          this.$http.post(this.baseUrl + 'stationInfo/stationBaseInfo', qs.stringify(ruleForm))
+          .then((res) => {
+            console.log(res)
+            if(res.data.code === 0){
+              this.$message({
+                type: 'success',
+                message: '提交成功!'
+              })
+            }else{
+              this.$message({
+                type: 'info',
+                message: '提交失败!'
+              })
+            }
+          }).catch((err) => {
+            console.log(err)
             this.$message({
-              type: 'success',
-              message: '修改成功!'
+              type: 'info',
+              message: '提交失败!'
             })
-          }else{
-            this.loading = false
+          })
+        }else{
+          this.$http.put(this.baseUrl + 'stationInfo/stationBaseInfo', qs.stringify(ruleForm))
+          .then((res) => {
+            if(res.data.code === 0){
+              this.$message({
+                type: 'success',
+                message: '修改成功!'
+              })
+            }else{
+              this.$message({
+                type: 'info',
+                message: '修改失败!'
+              })
+            }
+          }).catch((err) => {
+            console.log(err)
             this.$message({
               type: 'info',
               message: '修改失败!'
             })
-          }
-        }).catch((err) => {
-          console.log(err)
-          this.$message({
-            type: 'info',
-            message: '修改失败!'
           })
-        })
+        }
+        this.loading = false
       },
       getBasicBegin () {                       //打开时获取基础信息
         let siteStcd = this.$store.state.siteStcd

@@ -10,7 +10,7 @@
 				trigger="click">
 					<el-input v-model="search_input" placeholder="模糊查询" size="small" width="70"></el-input>
 				</el-popover>
-				<el-button v-popover:popover class="hiddenBtn"></el-button>
+				<el-button v-popover:popover class="hiddenBtn" id="hidden"></el-button>
 			</div>
 			<div class="mainLContent content"
 			v-loading="listloading"
@@ -35,6 +35,7 @@
 				class="table"
 			    :data="tableData"
 			    border
+				stripe
 			    style="width: 100%"
 			    size="small"
 				:height="clientHeight"
@@ -77,10 +78,12 @@
 				     </template>
 			      </el-table-column>
 			      <el-table-column
-			      label="删除"
+			      label="操作"
 			      align="center">
 			      	 <template slot-scope="scope">
-				        <el-button type="text" size="small" class="deleteBtn" @click="deleteSite(scope)"></el-button>
+						   <el-button type="text" size="small" @click="siteOption(scope)">配置</el-button>
+				           <el-button type="text" size="small" class="deleteBtn" @click="deleteSite(scope)"></el-button>
+						
 				     </template>
 			      </el-table-column>
 			    </el-table-column>
@@ -168,6 +171,30 @@
 			}
 		},
 		methods: {
+			transItemsName (item) {											
+				let arr = item.split('')
+				let itemName = []
+				for(let i=0;i<arr.length;i++){
+					switch (arr[i]) {
+						case 'Z': itemName.push('水位')
+						break
+						case 'Q': itemName.push('流量')
+						break
+						case 'P': itemName.push('雨量')
+						break
+						case 'E': itemName.push('蒸发')
+						break
+					}
+				}
+				return itemName.join(' ')
+			},
+			siteOption(scope){
+				console.log(scope)
+				this.$store.commit('siteOption',true)
+				this.$store.commit('siteObj',scope.row)
+				this.$store.commit('activeMenu','3')
+				this.$router.push('/SiteInfo')
+			},
 			sureReply () {												//审核弹出框提交操作
 				let openId = this.openId
 				let content = this.replyForm.content
@@ -433,12 +460,13 @@
 					for (let i = 0;i < data.length;i++) {
 						Num1 ++
 						let obj = {}
-						obj.addvcd = data[i].addvcd
+						obj.shi = data[i].shi
 						obj.stcd = data[i].stcd
 						obj.stnm = data[i].stnm
 						obj.sttp = this.sttpTransform(data[i].sttp)
 						obj.district = data[i].xian
-						obj.item = data[i].item
+						obj.item = this.transItemsName(data[i].item)
+						
 						obj.mine = data[i].poiType === 1? true : false
 						tableData.push(obj)
 						arrForTree[data[i].stcd] = ''
@@ -495,6 +523,14 @@
 					this.getTableData (openId)
 				}
 			},
+			userFilter () {
+				if(this.$store.state.userOption){
+					this.search_input = this.$store.state.userObj.realName
+					document.getElementById("hidden").click()
+				}else{
+
+				}
+			},
 			getUserList (phcd) {						//获取用户列表
 				this.$http.post(this.baseUrl + 'WXUser/wxuser', qs.stringify({addvcd: null, sex: null, state: null, phcd: phcd}))
 				.then((res) => {
@@ -504,9 +540,7 @@
 					this.total = data.length
 					let arr = []
 					for (var i = 0; i < data.length ; i++) {
-						console.log(data[i].state)
 						if(data[i].state != 0&&data[i].state != -2){
-							console.log(data[i].state + "！！！！！！！！！！")
 							let obj = {}
 							obj.realName = data[i].realName
 							obj.department = data[i].department
@@ -525,6 +559,7 @@
 				}).catch(function (err) {
 					console.log(err)
 				})
+				
 			},
 			getClientHeight () {								//获取table可视区高度
 				this.clientHeight = parseInt(this.getClientAtBegin() + 42)
@@ -542,10 +577,12 @@
 				}
 			},
 		},
-		created: function () {
+		mounted: function () {
 			this.listloading = true
+			this.$store.commit('siteOption',false)
 			this.activeMenu()
 			this.getUserList()												//通过函数获取
+			this.userFilter()
 			this.getClientHeight()
 		}
 	}
@@ -658,9 +695,8 @@
 		display:inline-block;
 		width:20px;
 		height:20px;
-		margin-right:0;
-		margin-top:-2px;
 		background:url(../assets/delete.png)no-repeat center;
+		padding:5px 16px;
 	}
 	.el-tree {
 		height:100%;
