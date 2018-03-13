@@ -5,15 +5,16 @@ import 'element-ui/lib/theme-chalk/index.css'
 import App from './App'
 import router from './router'
 import axios from 'axios'
+import sha1 from 'js-sha1'
 import { store } from './store/store'
 import { config } from '../static/config.js'
 //将axios绑到原型上，方便继承
 Vue.prototype.$http = axios
+Vue.prototype.$sha1 = sha1
     //以阻止 vue 在启动时生成生产提示
 Vue.config.productionTip = false
 Vue.prototype.baseUrl = config.baseUrl
 Vue.prototype.notAuthUrl = config.notAuthUrl
-    //'http://wx.gis580.com/wxbx/wxmanage/'
     //解决ajax跨域请求
 axios.defaults.withCredentials = true
     /* eslint-disable no-new */
@@ -45,22 +46,28 @@ Vue.prototype.trim = (str) => {
     return str.replace(/(^\s*)|(\s*$)/g, "")
 }
 Vue.prototype.sttpTransform = (str) => {
-  let sttp
-  switch (str) {
-      case 'PP':sttp = '雨量站'
-      break;
-      case 'RR':sttp = '水库站'
-      break;
-      case 'ZZ':sttp = '河道站'
-      break;
-      case 'DD':sttp = '闸坝站'
-      break;
-      case 'TT':sttp = '潮位站'
-      break;
-      case 'EE':sttp = '蒸发站'
-      break;
-      default:
-        break;
+    let sttp
+    switch (str) {
+        case 'PP':
+            sttp = '雨量站'
+            break;
+        case 'RR':
+            sttp = '水库站'
+            break;
+        case 'ZZ':
+            sttp = '河道站'
+            break;
+        case 'DD':
+            sttp = '闸坝站'
+            break;
+        case 'TT':
+            sttp = '潮位站'
+            break;
+        case 'EE':
+            sttp = '蒸发站'
+            break;
+        default:
+            break;
     }
     return sttp
 }

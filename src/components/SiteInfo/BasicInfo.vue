@@ -1,10 +1,10 @@
 <template>
 <div class="basicForm">
-<el-form :label-position="labelPosition" label-width="82px" :model="ruleForm" size="small" class=" clear">
+<el-form :label-position="labelPosition" label-width="82px" :rules="rules" :model="ruleForm" ref="ruleForm" size="small" class=" clear">
   <el-form-item label="站点名称" >
     <el-input v-model="ruleForm.stnm" class="basicInput"></el-input>
   </el-form-item>
-  <el-form-item label="站点编码">
+  <el-form-item label="站点编码" prop="stcd">
     <el-input v-model="ruleForm.stcd" class="basicInput"></el-input>
   </el-form-item>
   <el-form-item label="河道名称">
@@ -17,10 +17,10 @@
     <el-input v-model="ruleForm.bsnm" class="basicInput"></el-input>
   </el-form-item>
   <el-form-item label="经纬度">
-    <el-input v-model="ruleForm.lgtd" class="basicInput LGTD TD"></el-input><span class="l" style="margin:0 4px;">,</span>
-    <el-input v-model="ruleForm.lttd" class="basicInput LTTD TD"></el-input>
+    <el-input v-model="ruleForm.lgtd" class="basicInput LGTD TD" placeholder="东经"></el-input><span class="l" style="margin:0 4px;">,</span>
+    <el-input v-model="ruleForm.lttd" class="basicInput LTTD TD" placeholder="北纬"></el-input>
   </el-form-item>
-  <el-form-item label="站点类别" prop="region" >
+  <el-form-item label="站点类别" prop="sttp">
     <el-select v-model="ruleForm.sttp" placeholder="请选择活动区域" class="basicInput" >
       <el-option
         v-for="item in sttpOptions"
@@ -30,10 +30,20 @@
       </el-option>
     </el-select>
   </el-form-item>
-  <el-form-item label="行政区规划">
-    <el-input v-model="ruleForm.addvcd" class="basicInput"></el-input>
+  <el-form-item label="行政区规划" prop="addvcd">
+    <el-cascader
+		    expand-trigger="hover"
+		    :options="areaChoose"
+        @change="addvcdchange"
+		    v-model="addvcdVal"
+		     class="basicInput l"
+		     size="small"
+		     clearable
+		     placeholder="地区选择">
+		  </el-cascader>
+    <!-- <el-input v-model.number="ruleForm.addvcd" class="basicInput"></el-input> -->
   </el-form-item>
-  <el-form-item label="报汛等级" prop="region">
+  <el-form-item label="报汛等级">
     <el-select v-model="ruleForm.frgrd" placeholder="报汛等级" class="basicInput" >
       <el-option
         v-for="item in frgrdOptions"
@@ -43,7 +53,7 @@
       </el-option>
     </el-select>
   </el-form-item>
-  <el-form-item label="报汛项目" prop="region">
+  <el-form-item label="报汛项目">
     <el-select v-model="itemValue" multiple placeholder="请选择报汛项目" class="basicInput" size="small">
       <el-option
         v-for="item in itemOptions"
@@ -108,9 +118,23 @@ import qs from 'qs'
           esstym: '',
           bgfrym: '',
           stlc: '',
-          comments: ''
+          comments: '',
+          
         },
+        rules: {
+          sttp: [
+            { required: true, message: '站类不能为空！', trigger: 'blur' },
+          ],
+          addvcd: [
+            { required: true, message: '行政区规划不能为空！', trigger: 'blur' },
+          ],
+          stcd: [
+            { required: true, message: '站码不能为空', trigger: 'blur' }
+          ],
+        },
+        areaChoose:[],
         itemValue:[],
+        addvcdVal:[],
         frgrdOptions:[{
           value: '1',
           label: '中央报汛站'
@@ -166,6 +190,7 @@ import qs from 'qs'
       }
     },
     computed: {
+      
       addSite (){
         return this.$store.state.addSite
       },
@@ -178,8 +203,8 @@ import qs from 'qs'
         if(val){
           this.ruleForm = {}
           this.itemValue = []
-          
-
+          // this.areaChoose = []
+          this.addvcdVal = []
         }
       },
       getSiteStcd(val){                 //监听stcd的变化
@@ -189,26 +214,34 @@ import qs from 'qs'
       }
     },
     methods: {
+      addvcdchange () {
+        console.log(this.addvcdVal)
+      },
+      addvcdData () {									//获取地区信息
+        this.$http.get(this.baseUrl + 'comm/addvcdTree', qs.stringify({}))
+        .then((res) => {
+          console.log(res)
+          this.areaChoose = res.data.data
+        }).catch((err) => {
+          console.log(err)
+        })
+      },
       getSiteBasicInfo (stcd) {             //获取站点基础信息的函数
+      this.addvcdVal = []
         this.$http.get(this.baseUrl + 'stationInfo/stationBaseInfo/'+stcd)
         .then((res) => {
           if(res.data.code === 0){
             let data = res.data.data
-            let obj = {}
-            obj.stnm = data.stnm
-            obj.stcd = data.stcd
-            obj.rvnm = data.rvnm
-            obj.hnnm = data.hnnm
-            obj.bsnm = data.bsnm
-            obj.lgtd = data.lgtd
-            obj.lttd = data.lttd
-            obj.sttp = data.sttp
-            obj.addvcd = data.addvcd
-            obj.frgrd = data.frgrd
-            obj.phcd = data.phcd
-            obj.atcunit = data.atcunit
-            obj.admauth = data.admauth
-            obj.locality = data.locality
+            let obj = data
+            let fatherAddvcd
+            if(data.addvcd.lastIndexOf('00')!=-1){
+              fatherAddvcd = data.addvcd.substring(0,2)+'0000'
+            }
+            else{
+              fatherAddvcd = data.addvcd.substring(0,4)+'00'
+            }
+            this.addvcdVal.push(fatherAddvcd)
+            this.addvcdVal.push(data.addvcd)
             if(data.esstym&&data.esstym.length === 6){
               obj.esstym = data.esstym.substring(0,4)+'-'+data.esstym.substring(4)
             }else{
@@ -219,9 +252,7 @@ import qs from 'qs'
             }else{
               obj.bgfrym = ''
             }
-            obj.stlc = data.stlc
             obj.item = data.item === null?'-':data.item
-            obj.comments = data.comments
             this.ruleForm = obj
             if(data.item){
               this.itemValue = data.item.split('')
@@ -236,9 +267,10 @@ import qs from 'qs'
       changed () {                            //修改站点基础信息后提交的函数
         this.loading = true
         let ruleForm = JSON.parse(JSON.stringify(this.ruleForm))
-          if(ruleForm.esstym) ruleForm.esstym = ruleForm.esstym.split('-')[0]+ruleForm.esstym.split('-')[1]
-          if(ruleForm.bgfrym) ruleForm.bgfrym = ruleForm.bgfrym.split('-')[0]+ruleForm.bgfrym.split('-')[1]
-          ruleForm.item = this.itemValue.join('')
+        ruleForm.addvcd = this.addvcdVal[1]
+        if(ruleForm.esstym) ruleForm.esstym = ruleForm.esstym.split('-')[0]+ruleForm.esstym.split('-')[1]
+        if(ruleForm.bgfrym) ruleForm.bgfrym = ruleForm.bgfrym.split('-')[0]+ruleForm.bgfrym.split('-')[1]
+        ruleForm.item = this.itemValue.join('')
         if(this.$store.state.addSite){
           this.$http.post(this.baseUrl + 'stationInfo/stationBaseInfo', qs.stringify(ruleForm))
           .then((res) => {
@@ -246,19 +278,22 @@ import qs from 'qs'
             if(res.data.code === 0){
               this.$message({
                 type: 'success',
-                message: '提交成功!'
+                message: '添加成功!'
               })
+              this.$store.commit('siteSttp',ruleForm.sttp)                       //将sttp存储至store
+              this.$store.commit('siteStcd',ruleForm.stcd)
+              this.$router.push('/SiteInfo/BasicInfo')
             }else{
               this.$message({
                 type: 'info',
-                message: '提交失败!'
+                message: '添加失败!'+res.data.msg
               })
             }
           }).catch((err) => {
             console.log(err)
             this.$message({
               type: 'info',
-              message: '提交失败!'
+              message: '添加失败!'
             })
           })
         }else{
@@ -292,7 +327,8 @@ import qs from 'qs'
         }
       }
     },
-    created: function () {
+    mounted(){
+      this.addvcdData()
       this.getBasicBegin()
     }
   }

@@ -62,7 +62,7 @@
         prop="tm"
         label="时间"
         align="center"
-        sortable='custom'
+        sortable
         width="180"
         >
       </el-table-column>
@@ -84,7 +84,7 @@
         prop="modiTime"
         label="报汛时间"
         align="center"
-        sortable='custom'
+        sortable
         width="180"
         >
       </el-table-column>
@@ -326,16 +326,10 @@ export default{
           let arr = []
           if(data.length){
             for (var i = 0; i < data.length; i++) {
-              let obj = {}
-              obj.realName = data[i].realName
-              obj.stnm = data[i].stnm
-              obj.stcd = data[i].stcd
+              let obj = data[i]
               obj.tm = that.timeTrans(data[i].tm)
 							obj.sttp = this.sttpTransform(data[i].sttp)
-
-              obj.rptContent = data[i].rptContent
               obj.modiTime = that.timeTrans(data[i].modiTime)
-              obj.id = data[i].id
               arr.push(obj)
             }
             that.tableData = arr

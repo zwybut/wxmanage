@@ -8,7 +8,7 @@
 				placement="left"
 				width="150"
 				trigger="click">
-					<el-input v-model="search_input" placeholder="模糊查询" size="small" width="70"></el-input>
+					<el-input v-model="search_input" placeholder="输入姓名/电话/单位" size="small" width="70"></el-input>
 				</el-popover>
 				<el-button v-popover:popover class="hiddenBtn" id="hidden"></el-button>
 			</div>
@@ -18,7 +18,7 @@
 			element-loading-spinner="el-icon-loading"
 			element-loading-background="rgba(255, 255, 255, 1)">
 				<ul>
-					<li class='clear liNodes' @click="choose($event)" v-for='item in userList'><img src="../assets/weChart_logo.png" class='l img'></img>
+					<li class='clear liNodes' @click="choose($event)" v-for='item in userList'><img :src="item.headimgurl" class='l img'></img>
 						<div class='l'><span style="display:none">{{item.openId}}</span><span class="name">{{item.realName}}</span><span class="tel">{{item.cellPhone}}</span><br /><span class="adress">{{item.department}}</span></div>
 						<span class='chat r' @click="reply = true"></span>
 					</li>
@@ -27,7 +27,7 @@
 		</div>
 		<div class='mainC l'>
 			<div class="mainCTitle title">
-				<span>用户报汛站点 ( 关注站点 : {{Num1}} 我的报汛 : {{Num2}} )</span>
+				<span>用户报汛站点 ( 关注站点 : <span style="color:#1877ED;margin-left:0;">{{Num1}}</span>， 我的报汛 : <span style="color:#fa5555;margin-left:0;">{{Num2}}</span> )</span>
 				<el-button size="small" class="allDeleteBtn" @click="deleteAllSite" type="danger" plain>删除全部</el-button>
 			</div>
 			<div class="mainCContent content">
@@ -154,7 +154,7 @@
 			treeNode: [],			//tree数据
 			hadChecked: {},			//用户已关注站点hash
 			tableloading: false,
-			listloading: false,
+			listloading: true,
 			treeloading: false,
 			clientHeight: 0,		//table可视区高度 用来切头
 			search_input: '',		//用户搜索框
@@ -517,49 +517,40 @@
 					Li.classList.add('active')
 					let nodeChild = Li.children[1]
 					let openId = nodeChild.children[0].innerHTML
-					console.log(openId)
 					this.openId = openId
-
-					this.getTableData (openId)
+					this.getTableData(openId)
 				}
 			},
 			userFilter () {
 				if(this.$store.state.userOption){
-					this.search_input = this.$store.state.userObj.realName
-					document.getElementById("hidden").click()
-				}else{
-
+					setTimeout(() => {
+						this.search_input = this.$store.state.userObj.realName
+						document.getElementById("hidden").click()
+					}, 30)
+					
 				}
 			},
 			getUserList (phcd) {						//获取用户列表
 				this.$http.post(this.baseUrl + 'WXUser/wxuser', qs.stringify({addvcd: null, sex: null, state: null, phcd: phcd}))
 				.then((res) => {
-					this.listloading = false
+					
 					console.log(res.data)
 					let data = res.data.data
 					this.total = data.length
 					let arr = []
 					for (var i = 0; i < data.length ; i++) {
 						if(data[i].state != 0&&data[i].state != -2){
-							let obj = {}
-							obj.realName = data[i].realName
-							obj.department = data[i].department
-							obj.addvcd = data[i].addvcd
-							obj.sex = data[i].sex
-							obj.cellPhone = data[i].cellPhone
-							obj.comment = data[i].comment
-							obj.openId = data[i].openId
-							arr.push(obj)
+							arr.push(data[i])
 						}
 					}
 					this.userList = arr
 					setTimeout(() => {
 						this.showFirstUser()
+						this.listloading = false
 					}, 100)
 				}).catch(function (err) {
 					console.log(err)
 				})
-				
 			},
 			getClientHeight () {								//获取table可视区高度
 				this.clientHeight = parseInt(this.getClientAtBegin() + 42)
@@ -577,13 +568,14 @@
 				}
 			},
 		},
-		mounted: function () {
-			this.listloading = true
+		created(){
 			this.$store.commit('siteOption',false)
 			this.activeMenu()
 			this.getUserList()												//通过函数获取
-			this.userFilter()
 			this.getClientHeight()
+		},
+		mounted() {
+			this.userFilter()
 		}
 	}
 </script>

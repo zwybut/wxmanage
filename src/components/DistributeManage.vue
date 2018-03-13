@@ -274,13 +274,8 @@
 				let data = res.data.data
 				let arr = []
 				for (let i = 0; i< data.length; i++) {
-					let obj = {}
-					obj.configTm = data[i].configTm					//配置时间
-					obj.lastTm = data[i].lastTm						//最后登陆
-					obj.nName = data[i].nName
+					let obj = data[i]
 					obj.nId = data[i].nId.toString()
-					obj.pcId = data[i].pcId								//硬盘id
-					obj.isUsing = data[i].isUsing
 					arr.push(obj)
 				}
 				this.childrenNode = arr
@@ -637,7 +632,7 @@
 	},
 	//获取客户端对应的tree
     getTreeNode () {
-      this.treeloading = true
+		
       this.$http.get(this.baseUrl + 'comm/stationInfo', qs.stringify({}))
       .then((res) => {
         let data = res.data.data
@@ -700,7 +695,7 @@
 				treeData[i].children=sttpTree;
 			}
 			this.treeNode = treeData
-			this.treeloading = false
+			
      	}).catch(function (err) {
         console.log(err)
       })
@@ -712,30 +707,29 @@
         let  arrForTree= {}
         let tableData = []
         for (let i = 0;i < data.length;i++) {
-          let obj = {}
-          obj.stcd = data[i].stcd
-          obj.stnm = data[i].stnm
-          obj.sttp = data[i].sttp
-          obj.xian = data[i].xian
+          let obj = data[i]
           tableData.push(obj)
           arrForTree[data[i].stcd] = ''
         }
         this.tableData = tableData
-				this.hadChecked = arrForTree
-				this.getTreeNode()
-        this.tableloading = false
+		this.hadChecked = arrForTree
+		this.getTreeNode() 
       }
     },
 	//获取客户端的分发站点table
     getTableData (nId) {
-      	this.tableloading = true
-        this.$http.get(this.baseUrl + 'nodeManage/nodeToStcd/' + nId, qs.stringify({}))
-        .then((res) => {
-			this.tableData = res.data.data
-			this.addStationToList(res)
-        }).catch(function (err) {
-        	console.log(err)
-        })
+		this.tableloading = false
+		this.treeloading = false
+		if(nId){
+			this.$http.get(this.baseUrl + 'nodeManage/nodeToStcd/' + nId, qs.stringify({}))
+			.then((res) => {
+				this.tableData = res.data.data
+				this.addStationToList(res)
+			}).catch(function (err) {
+				console.log(err)
+			})
+		}
+      	
 	},
 	activeMenu () {
 		this.$store.commit('activeMenu', '6')
@@ -754,20 +748,11 @@
 			if(res.data.code == 0){
 				let data = res.data.data
 				let arr = []
-				console.log(data)
-				console.log(data[0].id)
 				this.open(data[0].id)
-
-				console.log(this.openedsMenuNode[0])
-
 				for (let i = 0; i< data.length; i++) {
-					let obj = {}
-					obj.name = data[i].name
-					obj.id = data[i].id
-					arr.push(obj)
+					arr.push(data[i])
 				}
 				this.fatherNode = arr
-
 				setTimeout(() => {
 					this.getTableData(this.activeNode)
 					this.activeMenuNode = this.activeNode

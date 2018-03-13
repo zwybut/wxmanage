@@ -146,16 +146,17 @@ export default{
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.numberValidateForm.passWord)
-          this.$http.post(this.notAuthUrl + 'util/'+this.numberValidateForm.userName+'/login/'+this.numberValidateForm.code, qs.stringify({password: this.numberValidateForm.passWord}))
+          this.$http.post(this.notAuthUrl + 'util/'+this.numberValidateForm.userName+'/login/'+this.numberValidateForm.code, qs.stringify({password: this.$sha1(this.numberValidateForm.passWord)}))
           .then(function (res) {
             let code = res.data.code
+            console.log(res)
             if (code === 0) {
               that.$router.push('/FloodReportUser')
               that.$store.commit('show', true)
               that.$store.commit('loginName', that.numberValidateForm.userName)
               let sStorage = window.sessionStorage
               sStorage['loginName'] = that.numberValidateForm.userName
-              console.log(that.$store.state.show)
+              
             } else {
               that.codeChange()
               if (code === -2) {

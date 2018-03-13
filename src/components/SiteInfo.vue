@@ -8,9 +8,9 @@
 				placement="left"
 				width="150"
 				trigger="click">
-					<el-input v-model="tree_input" placeholder="模糊查询" size="small" width="70"></el-input>
+					<el-input v-model="tree_input"  placeholder="输入站名" size="small" width="70" ></el-input>
 				</el-popover>
-				<el-button v-popover:popover class="hiddenBtn"></el-button>
+				<el-button v-popover:popover class="hiddenBtn" id="hidden_"></el-button>
 			</div>
 			<div class="mainLContent content">
 				<el-tree
@@ -97,15 +97,15 @@ export default{
 	},
     handleNodeClick (data,node,self) {							//tree点击函数
       if(data.stcd){
-				this.first = node.parent.parent.data.label							//将名称等信息赋值
-				this.second = node.parent.data.label
-				this.third = node.data.label
+		this.first = node.parent.parent.data.label							//将名称等信息赋值
+		this.second = node.parent.data.label
+		this.third = node.data.label
         this.activeIndex = '1'
-				this.$store.commit('siteStcd',data.stcd)							//站点stcd存到store中
-				this.$store.commit('siteSttp',data.sttp)							//站点sttp存到store中
+		this.$store.commit('siteStcd',data.stcd)							//站点stcd存到store中
+		this.$store.commit('siteSttp',data.sttp)							//站点sttp存到store中
       }
     },
-		activeMenu () {																	//将header默认显示页设为站点信息
+	activeMenu () {																	//将header默认显示页设为站点信息
       this.$store.commit('activeMenu', '3')
     },
 		getTreeNode () {														//获取tree
@@ -178,10 +178,13 @@ export default{
 						this.third = siteObj.stnm
 						this.showNode.push(this.trim(siteObj.stnm))
 						setTimeout(()=>{
+							
 							this.$refs.tree.setCurrentKey(this.trim(siteObj.stnm))												//设置tree默认第一个选中
 							this.$store.commit('siteStcd',siteObj.stcd)												//将stcd存储至store
 							this.$store.commit('siteSttp',siteObj.sttp)                       //将sttp存储至store
 							this.$router.push('/SiteInfo/BasicInfo')	
+							this.tree_input = this.trim(siteObj.stnm)
+							document.getElementById("hidden_").click()
 							console.log(this.showNode)
 						}, 50)
 					}else{

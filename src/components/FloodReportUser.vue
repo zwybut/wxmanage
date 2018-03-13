@@ -382,14 +382,8 @@ export default{
         this.total = data.length
         let arr = []
         for (var i = 0; i < data.length ; i++) {
-          let obj = {}
-          obj.realName = data[i].realName
-          obj.department = data[i].department
-          obj.addvcd = data[i].addvcd
-          obj.sex = data[i].sex
-          obj.cellPhone = data[i].cellPhone
+          let obj = data[i]
 					obj.tm = this.timeTrans(data[i].tm)
-					obj.addvnm = data[i].addvnm
           var str = ''
           switch (data[i].state) {
             case '1': str = '启用'
@@ -407,7 +401,6 @@ export default{
           }
           obj.state = str
           obj.comment = data[i].comment === null?'-':data[i].comment
-          obj.openId = data[i].openId
           arr.push(obj)
         }
         this.tableData = arr

@@ -144,13 +144,9 @@ import qs from 'qs'
                     console.log(res)
                     if(res.data.code === 0){
                         let data = res.data.data
-                        this.form.mName = data.mName
+                        this.form = data
                         this.form.pId = data.pId.toString()
-                        this.form.mType = data.mType
                         this.form.show = data.show.toString()
-                        this.form.mUrl = data.mUrl
-                        this.form.mKey = data.mKey
-                        this.form.mState = data.mState
                     }
                     
                 }).catch((err) => {

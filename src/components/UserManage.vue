@@ -60,36 +60,50 @@
 					width="140">
 	          <template slot-scope="scope">
 		        <el-button type="text" size="small" @click="optionRow(scope)">修改</el-button>
+						<el-button type="text" size="small" @click="passwordReset(scope)">密码重置</el-button>
 		      </template>
 	      </el-table-column>
 	    </el-table>
 		</div>
 	  <el-dialog title="修改用户" :visible.sync="option" width="550px">
-	  <el-form :model="optionForm" class="optionForm clear">
-	    <el-form-item label="用户名" :label-width="formLabelWidth" size="small">
-	      <el-input v-model="optionForm.realName" size="small"></el-input>
-	    </el-form-item>
-	    <el-form-item label="所属单位" :label-width="formLabelWidth" size="small">
-	      <el-input v-model="optionForm.ssdw" size="small" ></el-input>
-	    </el-form-item>
-			<el-form-item label="办公电话" :label-width="formLabelWidth" size="small">
-	      <el-input v-model="optionForm.phone" size="small" ></el-input>
-	    </el-form-item>
-			<el-form-item label="手机号码" :label-width="formLabelWidth" size="small">
-	      <el-input v-model="optionForm.cellPhone" size="small" ></el-input>
-	    </el-form-item>
-			<el-form-item label="管辖地区" :label-width="formLabelWidth" size="small">
-	      <el-input v-model="optionForm.jurisdiction" size="small" ></el-input>
-	    </el-form-item>
-			<el-form-item label="用户密码" :label-width="formLabelWidth" size="small">
-	      <el-input v-model="optionForm.password" size="small" ></el-input>
-	    </el-form-item>
-	  </el-form>
-	  <div slot="footer" class="dialog-footer">
-	    <el-button type="primary" @click="sureOption" size="small" class="buttons sureBtn">确 定</el-button>
-	    <el-button @click="cancleOption" size="small" class="buttons">取 消</el-button>
-	  </div>
-	</el-dialog>
+			<el-form :model="optionForm" class="optionForm clear">
+				<el-form-item label="用户名" :label-width="formLabelWidth" size="small">
+					<el-input v-model="optionForm.realName" size="small"></el-input>
+				</el-form-item>
+				<el-form-item label="所属单位" :label-width="formLabelWidth" size="small">
+					<el-input v-model="optionForm.ssdw" size="small" ></el-input>
+				</el-form-item>
+				<el-form-item label="办公电话" :label-width="formLabelWidth" size="small">
+					<el-input v-model="optionForm.phone" size="small" ></el-input>
+				</el-form-item>
+				<el-form-item label="手机号码" :label-width="formLabelWidth" size="small">
+					<el-input v-model="optionForm.cellPhone" size="small" ></el-input>
+				</el-form-item>
+				<el-form-item label="管辖地区" :label-width="formLabelWidth" size="small">
+					<el-input v-model="optionForm.jurisdiction" size="small" ></el-input>
+				</el-form-item>
+				<!-- <el-form-item label="用户密码" :label-width="formLabelWidth" size="small">
+					<el-input v-model="optionForm.password" size="small" ></el-input>
+				</el-form-item> -->
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="sureOption" size="small" class="buttons sureBtn">确 定</el-button>
+				<el-button @click="cancleOption" size="small" class="buttons">取 消</el-button>
+			</div>
+		</el-dialog>
+		<el-dialog title="重置密码" :visible.sync="pswReset" width="350px" >
+			<el-form :model="optionForm" class="optionForm clear">
+				<el-form-item label="用户名" :label-width="formLabelWidth" size="small">
+					<el-input v-model="optionForm.userName" size="small" disabled>{{}}</el-input>
+				</el-form-item>
+			</el-form>
+			
+			<p style="text-align:center;">此操作将重置该用户密码，是否确定?</p>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="sureReset" size="small" class="buttons sureBtn">确 定</el-button>
+				<el-button @click="cancleOption" size="small" class="buttons">取 消</el-button>
+			</div>
+		</el-dialog>
 	</main>
 
 </template>
@@ -104,6 +118,7 @@ import qs from 'qs'
 			clientHeight: 0,						//table可视区高度
 			tableloading: false,
 			option: false,							//设置弹窗显示控制
+			pswReset: false,
 			formLabelWidth: '72px',			//表单label宽度统一
 			optionForm: {								//设置弹窗数据
       	realName: '',
@@ -114,7 +129,8 @@ import qs from 'qs'
 				password: '',
 				addvcd: '',
 				userName:''
-      }
+			},
+			userName:''
     }
   },
   methods: {
@@ -152,16 +168,13 @@ import qs from 'qs'
 					console.log(data)
           let tableData = []
           for (var i=0;i < data.length; i++) {
-            let obj = {}
+            let obj = data[i]
             obj.realName = data[i].realname == null||''?'-':data[i].realname
             obj.ssdw = data[i].ssdw == null?'-':data[i].ssdw
             obj.phone = data[i].phone == null?'-':data[i].phone
             obj.cellphone = data[i].cellphone == null?'-':data[i].cellphone
             obj.loginTime = this.timeTrans(data[i].loginTm)
             obj.jurisdiction = data[i].addvnm
-						obj.addvcd = data[i].addvcd
-						obj.password = data[i].password
-						obj.userName = data[i].username
             obj.state = data[i].state === 1?true:false
             tableData.push(obj)
           }
@@ -175,17 +188,40 @@ import qs from 'qs'
 		getClientHeight () {								//获取tablek可视区高度
 			this.clientHeight = this.getClientAtBegin()
 		},
+		sureReset () {
+			this.$http.post(this.baseUrl + 'userManage/user/'+this.optionForm.userName, qs.stringify({}))
+      .then((res) => {
+				console.log(res)
+				if(res.data.code == 0){
+					this.$message({
+						type: 'success',
+						message: '重置成功!'
+					})
+					this.cancleOption()
+				}else{
+					this.$message({
+						type: 'info',
+						message: '重置失败!权限不足'
+					})
+				}
+				
+      }).catch((err) => {
+				console.log(err)
+				this.$message({
+					type: 'info',
+					message: '重置失败!'
+				})
+      })
+		},
+		passwordReset (scope) {
+			this.pswReset = true
+			console.log(scope)
+			this.optionForm = scope.row
+		},
 		optionRow (scope) {									//用户修改弹窗内容
 			this.option = true
 			console.log(scope)
-			this.optionForm.realName = scope.row.realName
-			this.optionForm.ssdw = scope.row.ssdw
-			this.optionForm.phone  = scope.row.phone 
-			this.optionForm.cellPhone = scope.row.cellphone
-			this.optionForm.jurisdiction = scope.row.jurisdiction
-			this.optionForm.password = scope.row.password
-			this.optionForm.addvcd = scope.row.addvcd
-			this.optionForm.userName = scope.row.userName
+			this.optionForm = scope.row
 		},
   	sureOption () {											//用户修改提交
 			let userName = this.optionForm.userName
@@ -196,7 +232,6 @@ import qs from 'qs'
 				phone:this.optionForm.phone,
 				cellPhone:this.optionForm.cellPhone,
 				addvnm:this.optionForm.jurisdiction,
-				password:this.optionForm.password
 			}))
       .then((res) => {
 				console.log(res)
@@ -215,7 +250,8 @@ import qs from 'qs'
       })
 		},
   	cancleOption () {										//取消修改
-  	  this.option = false
+			this.option = false
+			this.pswReset = false
 		}
   },
   created: function () {
