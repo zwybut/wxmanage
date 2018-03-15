@@ -71,6 +71,32 @@ Vue.prototype.sttpTransform = (str) => {
     }
     return sttp
 }
+Vue.prototype.sttpTransformReturn = (str) => {
+    let sttp
+    switch (str) {
+        case '雨量站':
+            sttp = 'PP'
+            break;
+        case '水库站':
+            sttp = 'RR'
+            break;
+        case '河道站':
+            sttp = 'ZZ'
+            break;
+        case '闸坝站':
+            sttp = 'DD'
+            break;
+        case '潮位站':
+            sttp = 'TT'
+            break;
+        case '蒸发站':
+            sttp = 'EE'
+            break;
+        default:
+            break;
+    }
+    return sttp
+}
 new Vue({
     el: '#app',
     router,

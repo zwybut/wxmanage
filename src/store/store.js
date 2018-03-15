@@ -9,6 +9,7 @@ export const store = new Vuex.Store({
         activeMenu: '1', //当前默认选中的页面
         siteStcd: '', //选中的站点stcd
         siteSttp: '', //选中的站点sttp
+        newSiteObj: {},
         userOption: false,
         userObj: {},
         siteOption: false,
@@ -26,6 +27,9 @@ export const store = new Vuex.Store({
         },
         siteSttp: (state, siteSttp) => {
             state.siteSttp = siteSttp
+        },
+        newSiteObj: (state, newSiteObj) => {
+            state.newSiteObj = newSiteObj
         },
         show: (state, show) => {
             state.show = show

@@ -318,6 +318,7 @@ import qs from 'qs'
               })
               this.$store.commit('siteSttp',ruleForm.sttp)                       //将sttp存储至store
               this.$store.commit('siteStcd',ruleForm.stcd)
+              this.$store.commit('newSiteObj',ruleForm)
               this.$store.commit('addOrDeleteEnd',true)
               this.$store.commit('addSite',false)
               this.$router.push('/SiteInfo')
@@ -338,6 +339,7 @@ import qs from 'qs'
           this.$http.put(this.baseUrl + 'stationInfo/stationBaseInfo', qs.stringify(ruleForm))
           .then((res) => {
             if(res.data.code === 0){
+              console.log(res)
               this.$message({
                 type: 'success',
                 message: '修改成功!'

@@ -81,9 +81,26 @@ export default{
 		addOrDeleteEnd(val){
 			console.log(val)
 			if(val){
-				this.$store.commit('addOrDeleteEnd',false) 
+				this.showNode = []
 				this.getTreeNode()
 				this.showBtn = true
+				setTimeout(()=>{
+					this.showNode.push(this.$store.state.newSiteObj['stnm'])
+					console.log(this.showNode)
+					this.$refs.tree.setCurrentKey(this.$store.state.newSiteObj['stnm'])	
+					let key 
+					for (key in this.treeNode) {
+						if((this.$store.state.newSiteObj['addvcd']).substring(0,4)==this.treeNode[key].id.substring(0,4)){
+							
+							console.log(this.treeNode[key].label)
+							this.first = this.treeNode[key].label
+						}
+					}
+					this.second = this.sttpTransform(this.$store.state.newSiteObj['sttp'])
+					this.third = this.$store.state.newSiteObj['stnm']
+					
+				},300)
+				
 			}
 		},
 		tree_input:{  								//监听tree搜索
@@ -94,27 +111,34 @@ export default{
 	},
   methods: {
 	deleteSite (){
-		this.$http.delete(this.baseUrl + 'stationInfo/stationBaseInfo/'+this.$store.state.siteStcd, qs.stringify())
-		.then((res) => {
-		if(res.data.code === 0){
-			this.$message({
-			type: 'success',
-			message: '删除成功!'
+		this.$confirm('此操作将删除该站点, 是否继续?', '提示', {				//删除弹出窗
+			confirmButtonText: '确定',
+			cancelButtonText: '取消',
+			type: 'warning'
+		}).then(() => {
+			this.$http.delete(this.baseUrl + 'stationInfo/stationBaseInfo/'+this.$store.state.siteStcd, qs.stringify())
+			.then((res) => {
+			if(res.data.code === 0){
+				this.$message({
+				type: 'success',
+				message: '删除成功!'
+				})
+				this.getTreeNode()
+			}else{
+				this.$message({
+				type: 'info',
+				message: '删除失败!'
+				})
+			}
+			}).catch((err) => {
+				console.log(err)
+				this.$message({
+					type: 'info',
+					message: '删除失败!'
+				})
 			})
-			this.getTreeNode()
-		}else{
-			this.$message({
-			type: 'info',
-			message: '删除失败!'
-			})
-		}
-		}).catch((err) => {
-		console.log(err)
-		this.$message({
-			type: 'info',
-			message: '删除失败!'
-		})
-		})
+		}).catch(() => {})
+		
 	},
 	addSite (){
 		console.log(this.$store.state.addSite)
@@ -206,41 +230,49 @@ export default{
 						treeData[i].children=sttpTree;
 					}
 					this.treeNode = treeData
-					if(this.$store.state.siteOption){
-						let siteObj = this.$store.state.siteObj
-						this.first = siteObj.shi
-						this.second = siteObj.sttp
-						this.third = siteObj.stnm
-						this.showNode.push(this.trim(siteObj.stnm))
-						setTimeout(()=>{
+						if(this.$store.state.siteOption){
+							let siteObj = this.$store.state.siteObj
+							this.first = siteObj.shi
+							this.second = siteObj.sttp
+							this.third = siteObj.stnm
+							this.showNode.push(this.trim(siteObj.stnm))
+							setTimeout(()=>{
+								this.$refs.tree.setCurrentKey(this.trim(siteObj.stnm))												//设置tree默认第一个选中
+								this.$store.commit('siteStcd',siteObj.stcd)												//将stcd存储至store
+								this.$store.commit('siteSttp',this.sttpTransformReturn(siteObj.sttp))                       //将sttp存储至store
+								this.$router.push('/SiteInfo/BasicInfo')	
+								this.tree_input = this.trim(siteObj.stnm)
+								document.getElementById("hidden_").click()
+								console.log(siteObj.sttp)
+							}, 50)
+						}else{
+							let first = treeData[0].children
+							let second = first[0].children
+							let show = second[0].label
+							let STTP = second[0].sttp
+							let STCD = second[0].stcd
 							
-							this.$refs.tree.setCurrentKey(this.trim(siteObj.stnm))												//设置tree默认第一个选中
-							this.$store.commit('siteStcd',siteObj.stcd)												//将stcd存储至store
-							this.$store.commit('siteSttp',siteObj.sttp)                       //将sttp存储至store
-							this.$router.push('/SiteInfo/BasicInfo')	
-							this.tree_input = this.trim(siteObj.stnm)
-							document.getElementById("hidden_").click()
-							console.log(this.showNode)
-						}, 50)
-					}else{
-						let first = treeData[0].children
-						let second = first[0].children
-						let show = second[0].label
-						let STTP = second[0].sttp
-						let STCD = second[0].stcd
-						this.showNode.push(show)
-						setTimeout(()=>{
-							this.first = treeData[0].label
-							this.second = first[0].label
-							this.third = show
-							console.log(this.showNode)
-							this.$refs.tree.setCurrentKey(show)												//设置tree默认第一个选中
-							this.$store.commit('siteStcd',STCD)												//将stcd存储至store
-							this.$store.commit('siteSttp',STTP)                       //将sttp存储至store
-						}, 50)
-						
-						this.$router.push('/SiteInfo/BasicInfo')										//展示站点基础信息
-					}
+							setTimeout(()=>{
+								
+									
+								if(!this.$store.state.addOrDeleteEnd){
+									this.first = treeData[0].label
+									this.second = first[0].label
+									this.third = show
+									console.log(this.showNode)
+									this.showNode.push(show)
+									this.$refs.tree.setCurrentKey(show)												//设置tree默认第一个选中
+									this.$store.commit('siteStcd',STCD)												//将stcd存储至store
+									this.$store.commit('siteSttp',STTP)                       //将sttp存储至store
+								}else{
+									this.$store.commit('addOrDeleteEnd',false) 
+								}
+								
+							}, 50)
+							
+							this.$router.push('/SiteInfo/BasicInfo')										//展示站点基础信息
+						}
+					
 					this.treeloading = false
 				}).catch(function (err) {
 					console.log(err)
