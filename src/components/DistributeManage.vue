@@ -15,14 +15,14 @@
 				:default-active = 'activeMenuNode'
 				>
 				<el-submenu v-for="(item,index) in fatherNode" :key="index" :index="item.id" >
-					<div slot="title" style="position:relative">
+					<div slot="title" style="position:relative;">
 						<span>{{item.name}}</span>
 						<div class="menu_btns r" style="position:absolute;top:0;left:232px;">
 							<el-tooltip class="item" effect="dark" content="组信息修改" placement="top">
-							<span class="menubtn option" @click="groupOptions"></span>
+							<span class="menubtn option" @click="groupOptions($event)"></span>
 							</el-tooltip>
 							<el-tooltip class="item" effect="dark" content="删除客户端组" placement="top">
-							<span class="menubtn delete" @click="groupDeleteEvent"></span>
+							<span class="menubtn delete" @click="groupDeleteEvent($event)"></span>
 							</el-tooltip>
 
 
@@ -141,12 +141,13 @@
 		</div>
 		<el-dialog title="节点分发管理" :visible.sync="option" width="400px">
 			<el-form :model="optionForm" class="distributeOption clear">
+				<el-form-item label="节点编号" :label-width="formLabelWidth" size="small" v-if="addGroup">
+					<el-input v-model="optionForm.id" size="small" disabled></el-input>
+				</el-form-item>
 				<el-form-item label="节点名称" :label-width="formLabelWidth" size="small" v-if="addGroup">
 					<el-input v-model="optionForm.name" size="small"></el-input>
 				</el-form-item>
-				<el-form-item label="节点编号" :label-width="formLabelWidth" size="small" v-if="addGroup">
-					<el-input v-model="optionForm.id" size="small" :disabled="disabled"></el-input>
-				</el-form-item>
+				
 				<div v-else>
 					<el-form-item label="父级节点" :label-width="formLabelWidth" size="small">
 						<el-input v-model="faterNodeName" size="small" disabled></el-input>
@@ -231,7 +232,8 @@
 	//判断是否为添加
 	//若是生成时间戳做为nId
 	//若否则调用获取该客户端table的函数
-	select (nId) {
+	select (nId,a,b) {
+		console.log(a,b)
 		this.nId = nId
 		this.optionForm = {}
 		if(nId.indexOf("add") >= 0){
@@ -333,14 +335,19 @@
 
 	},
 	//客户端组设置函数显示设置窗
-	groupOptions (){
+	groupOptions ($event){
+		console.log($event)
+		$event.cancelBubble=true
+		// $event.stopPropagation()
 		this.disabled = true
 		this.addGroup = true
 		this.option = true
 		this.nId = ''
 	},
 	//客户端组删除函数
-	groupDeleteEvent () {
+	groupDeleteEvent ($event) {
+		$event.cancelBubble=true
+		// $event.stopPropagation()
 		setTimeout(()=> {
 			this.$confirm('此操作将删除该客户端组, 是否继续?', '提示', {
 				confirmButtonText: '确定',
@@ -367,8 +374,7 @@
 			}).catch(() => {})
 		}, 30)
 	},
-	//客户端删除函数
-	options (event) {
+	options () {
 		setTimeout(() => {
 			this.option = true
 			this.addGroup = false
@@ -544,7 +550,7 @@
   	},
 	  //删除所有分发站点
 	deleteAllSite () {
-		this.$confirm('此操作将删除该用户所有分发站点, 是否继续?', '提示', {				//删除弹出窗
+		this.$confirm('此操作将删除该节点所有的分发站点, 是否继续?', '提示', {				//删除弹出窗
 			confirmButtonText: '确定',
 			cancelButtonText: '取消',
 			type: 'warning'
@@ -579,10 +585,10 @@
 		let type = ''
 		console.log(this.getCheckedKeys)
 		if (this.getCheckedKeys.length) {
-			massage = '此操作将添加用户关注站点, 是否继续?'
+			massage = '此操作将添加节点分发站点, 是否继续?'
 			type = 'success'
 		}else{
-			massage = '请先选择需要关注的站点'
+			massage = '请先选择需要添加的分发站点'
 			type = 'info'
 		}
 		this.$confirm(massage, '提示', {
@@ -591,7 +597,6 @@
 			type: type
 		}).then(() => {
 		if(this.getCheckedKeys.length){
-			let openId = this.openId					//将tree中选择的站点添加到关注站点中
 			this.tableloading = true
 			this.treeloading = true
 			for (var i = 0;i < this.getCheckedKeys.length; i++) {
@@ -872,10 +877,10 @@
 		margin-left:5px;
 	}
 	.menu_btns .use{
-		background:url(../assets/distribute_off.png)no-repeat center;
+		background:url(../assets/distribute_on.png)no-repeat center;
 	}
 	.menu_btns .use.true{
-		background:url(../assets/distribute_on.png)no-repeat center;
+		background:url(../assets/distribute_off.png)no-repeat center;
 	}
 	.menu_btns .option{
 		background:url(../assets/distribute_option.png)no-repeat center;
@@ -885,10 +890,10 @@
 	}
 
 	.menu_btns .use:hover,.el-menu-item.is-active .use{
-		background:url(../assets/distribute_off_active.png)no-repeat center;
+		background:url(../assets/distribute_on_active.png)no-repeat center;
 	}
 	.menu_btns .use.true:hover,.el-menu-item.is-active .use.true{
-		background:url(../assets/distribute_on_active.png)no-repeat center;
+		background:url(../assets/distribute_off_active.png)no-repeat center;
 	}
 	.menu_btns .option:hover,.el-menu-item.is-active .option{
 		background:url(../assets/distribute_option_hover.png)no-repeat center;
@@ -961,9 +966,11 @@
 	}
 	.addGroupNode{
 		height:40px;
+		background:#f1f1f1;
 	}
 	.addGroupNode .unitName{
 		line-height:40px;
 		float:left;
 	}
+	
 </style>

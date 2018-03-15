@@ -496,4 +496,7 @@ export default {
 	#passwordChange .el-form-item__error{
 		padding-top:0;
 	}
+	.distribute_menu .el-submenu__title{
+		background:#f1f1f1;
+	}
 </style>

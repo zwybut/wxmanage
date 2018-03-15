@@ -41,8 +41,8 @@
 				mode="horizontal"
 				active-text-color="#fff">
 			  <el-menu-item index="1"><router-link to="/SiteInfo/BasicInfo" class="tabs">基本信息</router-link></el-menu-item>
-			  <el-menu-item index="2"><router-link to="/SiteInfo/FloodProjectCustom" class="tabs">报汛项目定制</router-link></el-menu-item>
-			  <el-menu-item index="3"><router-link to="/SiteInfo/FloodNumOption" class="tabs">汛情阈值</router-link></el-menu-item>
+			  <el-menu-item index="2" v-if="showBtn"><router-link to="/SiteInfo/FloodProjectCustom" class="tabs">报汛项目定制</router-link></el-menu-item>
+			  <el-menu-item index="3" v-if="showBtn"><router-link to="/SiteInfo/FloodNumOption" class="tabs">汛情阈值</router-link></el-menu-item>
 			</el-menu>
 			<router-view></router-view>
 		</div>
@@ -61,17 +61,31 @@ export default{
         label: 'label'
 			},
 			tree_input: '',											//tree查询
-      treeNode: [],												//tree数据
-	  showNode: [],											//默认第一个tree节点展开
-      treeloading: false,
-      trueBoolean: true,
-			first: '',													//站点所属地区
-			second: '',													//站点类别
-			third: ''														//站点名称
+		treeNode: [],												//tree数据
+		showNode: [],											//默认第一个tree节点展开
+		treeloading: false,
+		trueBoolean: true,
+		first: '',													//站点所属地区
+		second: '',													//站点类别
+		third: '',														//站点名称
+		showBtn:true
     }
 
 	},
+	computed:{
+		addOrDeleteEnd (){
+			return this.$store.state.addOrDeleteEnd
+		},
+	},
 	watch: {
+		addOrDeleteEnd(val){
+			console.log(val)
+			if(val){
+				this.$store.commit('addOrDeleteEnd',false) 
+				this.getTreeNode()
+				this.showBtn = true
+			}
+		},
 		tree_input:{  								//监听tree搜索
 			handler:function(val,oldval){
 				this.$refs.tree.filter(val)
@@ -80,16 +94,39 @@ export default{
 	},
   methods: {
 	deleteSite (){
-
+		this.$http.delete(this.baseUrl + 'stationInfo/stationBaseInfo/'+this.$store.state.siteStcd, qs.stringify())
+		.then((res) => {
+		if(res.data.code === 0){
+			this.$message({
+			type: 'success',
+			message: '删除成功!'
+			})
+			this.getTreeNode()
+		}else{
+			this.$message({
+			type: 'info',
+			message: '删除失败!'
+			})
+		}
+		}).catch((err) => {
+		console.log(err)
+		this.$message({
+			type: 'info',
+			message: '删除失败!'
+		})
+		})
 	},
 	addSite (){
+		console.log(this.$store.state.addSite)
 		this.$store.commit('addSite',true)
+		this.showBtn = false
 		this.treeNode = []
 		this.first = ''
 		this.second = ''
 		this.third = ''
 		this.$store.commit('siteStcd','')
 		this.$store.commit('siteSttp','')
+		
 	},
 	filterNode(value, data) {
 		if (!value) return true
@@ -109,8 +146,6 @@ export default{
       this.$store.commit('activeMenu', '3')
     },
 		getTreeNode () {														//获取tree
-		
-			
 				this.treeloading = true
 				this.$http.get(this.baseUrl + 'comm/stationInfo', qs.stringify({}))
 				.then((res) => {

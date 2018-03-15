@@ -13,7 +13,8 @@ export const store = new Vuex.Store({
         userObj: {},
         siteOption: false,
         siteObj: {},
-        addSite: false
+        addSite: false,
+        addOrDeleteEnd: false
     },
     getters: {
         getUser: state => state.floodReportUser
@@ -51,7 +52,10 @@ export const store = new Vuex.Store({
             state.siteObj = siteObj
         },
         addSite: (state, addSite) => {
-            state.addSite = addSite
+            state.addSite = !state.addSite
+        },
+        addOrDeleteEnd: (state, addOrDeleteEnd) => {
+            state.addOrDeleteEnd = addOrDeleteEnd
         },
     }
 })

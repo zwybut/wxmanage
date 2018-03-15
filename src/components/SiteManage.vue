@@ -72,6 +72,7 @@
 			      prop="mine"
 			      label="我的报汛"
 			      align="center"
+				  sortable
 			      >
 			      	 <template slot-scope="scope">
 				        <el-checkbox v-model='scope.row.mine' @change="checkChange(scope)" class="myFlood"></el-checkbox>

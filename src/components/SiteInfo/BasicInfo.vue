@@ -1,7 +1,7 @@
 <template>
 <div class="basicForm">
 <el-form :label-position="labelPosition" label-width="82px" :rules="rules" :model="ruleForm" ref="ruleForm" size="small" class=" clear">
-  <el-form-item label="站点名称" >
+  <el-form-item label="站点名称" prop="stnm">
     <el-input v-model="ruleForm.stnm" class="basicInput"></el-input>
   </el-form-item>
   <el-form-item label="站点编码" prop="stcd">
@@ -72,7 +72,7 @@
   <el-form-item label="管理单位">
     <el-input v-model="ruleForm.admauth" class="basicInput"></el-input>
   </el-form-item>
-  <el-form-item label="交换单位">
+  <el-form-item label="交换单位" prop="locality">
     <el-input v-model="ruleForm.locality" class="basicInput"></el-input>
   </el-form-item>
   <el-form-item label="建站年月" >
@@ -88,7 +88,7 @@
     <el-input type="textarea" v-model="ruleForm.comments" class="textArea"></el-input>
   </el-form-item>
 </el-form>
-<el-button type="primary" :loading="loading" @click="changed" class="submitBtn" size="small">提交</el-button>
+<el-button type="primary" :loading="loading" @click="changed" class="submitBtn" size="small">保存</el-button>
 </div>
 </template>
 
@@ -97,6 +97,35 @@ import qs from 'qs'
   export default{
     name: 'BasicInfo',
     data () {
+      let stcdValidator = (rule, value, callback) => {
+        if (!value) {
+          console.log(111111111)
+          callback(new Error('站码不能为空'))
+        }else{  
+          console.log(value.length)
+          if(value.length > 8){
+            console.log(22222222)
+            callback(new Error('站码不能超过8位'))
+          }else{
+            console.log(333333333)
+            this.$http.get(this.baseUrl + 'stationInfo/authStcd/' + value, qs.stringify({}))
+            .then((res) => {
+              console.log(res)
+              if(res.data.code != 0){
+                callback(new Error('站码已存在'))
+              }else{
+                callback()
+              }
+
+            }).catch((err) => {
+              console.log(err)
+            })
+            
+          }
+          
+        }
+            
+      }
       return {
         labelPosition: 'left',                 //label的对其方式
         ruleForm: {                            //站点基础信息每个对应的key
@@ -122,6 +151,9 @@ import qs from 'qs'
           
         },
         rules: {
+          stnm: [
+            { required: true, message: '站名不能为空！', trigger: 'blur' },
+          ],
           sttp: [
             { required: true, message: '站类不能为空！', trigger: 'blur' },
           ],
@@ -129,7 +161,10 @@ import qs from 'qs'
             { required: true, message: '行政区规划不能为空！', trigger: 'blur' },
           ],
           stcd: [
-            { required: true, message: '站码不能为空', trigger: 'blur' }
+            {required: true,validator: stcdValidator, trigger: 'blur' , }
+          ],
+          locality: [
+            { required: true, message: '交换单位不能为空', trigger: 'blur' }
           ],
         },
         areaChoose:[],
@@ -199,8 +234,9 @@ import qs from 'qs'
       }
     },
     watch: {
-      addSite (val) {
-        if(val){
+      addSite (val0,val1) {
+        console.log(val0,val1)
+        if(val0 != val1){
           this.ruleForm = {}
           this.itemValue = []
           // this.areaChoose = []
@@ -282,7 +318,9 @@ import qs from 'qs'
               })
               this.$store.commit('siteSttp',ruleForm.sttp)                       //将sttp存储至store
               this.$store.commit('siteStcd',ruleForm.stcd)
-              this.$router.push('/SiteInfo/BasicInfo')
+              this.$store.commit('addOrDeleteEnd',true)
+              this.$store.commit('addSite',false)
+              this.$router.push('/SiteInfo')
             }else{
               this.$message({
                 type: 'info',
