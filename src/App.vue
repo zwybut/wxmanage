@@ -18,7 +18,7 @@
 		  <el-menu-item index="3"><router-link to="/SiteInfo">站点配置</router-link></el-menu-item>
 		  <el-menu-item index="4"><router-link to="/FloodReportSearch">原报文查询</router-link></el-menu-item>
 			<el-menu-item index="6"><router-link to="/DistributeManage">分发管理</router-link></el-menu-item>
-		  <el-menu-item index="7"><router-link to="/OperationLog">用户日志查询</router-link></el-menu-item>
+		  <!-- <el-menu-item index="7"><router-link to="/OperationLog">用户日志查询</router-link></el-menu-item> -->
 		  <el-menu-item index="8"><router-link to="/UserManage">管理员信息管理</router-link></el-menu-item>
 			<el-menu-item index="9"><router-link to="/MenuManage">公众号菜单配置</router-link></el-menu-item>
 		</el-menu>
@@ -472,22 +472,22 @@ export default {
   .el-loading-mask{
     z-index:1000;
   }
-	div::-webkit-scrollbar{  
+	div::-webkit-scrollbar,ul::-webkit-scrollbar{  
         width:6px;  
         height:4px;  
 	}  
-	div::-webkit-scrollbar-track{  
+	div::-webkit-scrollbar-track,ul::-webkit-scrollbar-track{  
 			background: #f6f6f6;  
 			border-radius:2px;  
 	}  
-	div::-webkit-scrollbar-thumb{  
+	div::-webkit-scrollbar-thumb,ul::-webkit-scrollbar-thumb{  
 			background: #aaa;  
 			border-radius:2px;  
 	}  
-	div::-webkit-scrollbar-thumb:hover{  
+	div::-webkit-scrollbar-thumb:hover,ul::-webkit-scrollbar-thumb:hover{  
 			background: #747474;  
 	}  
-	div::-webkit-scrollbar-corner{  
+	div::-webkit-scrollbar-corner,ul::-webkit-scrollbar-corner{  
 			background: #f6f6f6;  
 	}  
 	#passwordChange .el-form-item{

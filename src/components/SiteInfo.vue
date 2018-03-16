@@ -120,14 +120,14 @@ export default{
 			.then((res) => {
 			if(res.data.code === 0){
 				this.$message({
-				type: 'success',
-				message: '删除成功!'
+					type: 'success',
+					message: '删除成功!'
 				})
 				this.getTreeNode()
 			}else{
 				this.$message({
-				type: 'info',
-				message: '删除失败!'
+					type: 'info',
+					message: '删除失败!'
 				})
 			}
 			}).catch((err) => {
@@ -142,6 +142,7 @@ export default{
 	},
 	addSite (){
 		console.log(this.$store.state.addSite)
+		this.$router.push('/SiteInfo/BasicInfo')
 		this.$store.commit('addSite',true)
 		this.showBtn = false
 		this.treeNode = []
@@ -254,7 +255,6 @@ export default{
 							
 							setTimeout(()=>{
 								
-									
 								if(!this.$store.state.addOrDeleteEnd){
 									this.first = treeData[0].label
 									this.second = first[0].label

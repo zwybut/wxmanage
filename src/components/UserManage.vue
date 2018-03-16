@@ -1,7 +1,12 @@
 <template>
-	<main class="	main">
-		<h2>管理员信息管理</h2>
+	<main class="clear main">
+		<h2 class="l">管理员信息管理</h2>
+		<div class="searchBox r">
+			<el-input v-model="phcd" placeholder="请输入用户名/单位/电话/辖区" class="phcd l" size="small"></el-input>
+		  <el-button type="primary" size="small" class="l" @click="search">查询</el-button>
+		</div>
 		<div class="l table">
+			
 		<el-table
 			:data="tableData"
 			style="width: 100%"
@@ -13,7 +18,7 @@
 			element-loading-background="rgba(255, 255, 255, 1)"
 	      >
 	      <el-table-column
-	        prop="realName"
+	        prop="username"
 	        label="用户名"
 	       	align="center">
 	      </el-table-column>
@@ -68,7 +73,7 @@
 	  <el-dialog title="修改用户" :visible.sync="option" width="550px">
 			<el-form :model="optionForm" class="optionForm clear">
 				<el-form-item label="用户名" :label-width="formLabelWidth" size="small">
-					<el-input v-model="optionForm.realName" size="small"></el-input>
+					<el-input v-model="optionForm.username" size="small"></el-input>
 				</el-form-item>
 				<el-form-item label="所属单位" :label-width="formLabelWidth" size="small">
 					<el-input v-model="optionForm.ssdw" size="small" ></el-input>
@@ -130,10 +135,14 @@ import qs from 'qs'
 				addvcd: '',
 				userName:''
 			},
-			userName:''
+			userName:'',
+			phcd:''
     }
   },
   methods: {
+		search () {
+			this.getTableInfo()
+		},
     checkChange (scope) {						//账户是否启用
 			let userName = scope.row.userName
 			let state = scope.row.state === true?1:0
@@ -161,7 +170,7 @@ import qs from 'qs'
     },
     getTableInfo () {								//获取用户列表
 			this.tableloading = true
-      this.$http.get(this.baseUrl + 'userManage/user', qs.stringify({}))
+      this.$http.post(this.baseUrl + 'userManage/user', qs.stringify({phcd:this.phcd}))
       .then(res => {
         if (res.data.code === 0) {
           let data = res.data.data
@@ -169,7 +178,7 @@ import qs from 'qs'
           let tableData = []
           for (var i=0;i < data.length; i++) {
             let obj = data[i]
-            obj.realName = data[i].realname == null||''?'-':data[i].realname
+            obj.username = data[i].username == null||''?'-':data[i].username
             obj.ssdw = data[i].ssdw == null?'-':data[i].ssdw
             obj.phone = data[i].phone == null?'-':data[i].phone
             obj.cellphone = data[i].cellphone == null?'-':data[i].cellphone
@@ -274,5 +283,8 @@ import qs from 'qs'
 	}
 	.sureBtn{
 		margin-right:20px;
+	}
+	.phcd{
+		width:220px;
 	}
 </style>

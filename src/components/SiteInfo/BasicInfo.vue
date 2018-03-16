@@ -307,33 +307,45 @@ import qs from 'qs'
         if(ruleForm.esstym) ruleForm.esstym = ruleForm.esstym.split('-')[0]+ruleForm.esstym.split('-')[1]
         if(ruleForm.bgfrym) ruleForm.bgfrym = ruleForm.bgfrym.split('-')[0]+ruleForm.bgfrym.split('-')[1]
         ruleForm.item = this.itemValue.join('')
+
+        console.log(this.$store.state.addSite)
         if(this.$store.state.addSite){
-          this.$http.post(this.baseUrl + 'stationInfo/stationBaseInfo', qs.stringify(ruleForm))
-          .then((res) => {
-            console.log(res)
-            if(res.data.code === 0){
-              this.$message({
-                type: 'success',
-                message: '添加成功!'
+          this.$refs['ruleForm'].validate((valid) => {
+          if (valid) {
+              this.$http.post(this.baseUrl + 'stationInfo/stationBaseInfo', qs.stringify(ruleForm))
+              .then((res) => {
+                console.log(res)
+                if(res.data.code === 0){
+                  this.$message({
+                    type: 'success',
+                    message: '添加成功!'
+                  })
+                  this.$store.commit('siteSttp',ruleForm.sttp)                       //将sttp存储至store
+                  this.$store.commit('siteStcd',ruleForm.stcd)
+                  this.$store.commit('newSiteObj',ruleForm)
+                  this.$store.commit('addOrDeleteEnd',true)
+                  this.$store.commit('addSite',false)
+                  this.$router.push('/SiteInfo')
+                }else{
+                  this.$message({
+                    type: 'info',
+                    message: '添加失败!'+res.data.msg
+                  })
+                }
+              }).catch((err) => {
+                console.log(err)
+                this.$message({
+                  type: 'info',
+                  message: '添加失败!'
+                })
               })
-              this.$store.commit('siteSttp',ruleForm.sttp)                       //将sttp存储至store
-              this.$store.commit('siteStcd',ruleForm.stcd)
-              this.$store.commit('newSiteObj',ruleForm)
-              this.$store.commit('addOrDeleteEnd',true)
-              this.$store.commit('addSite',false)
-              this.$router.push('/SiteInfo')
-            }else{
+            } else {
               this.$message({
-                type: 'info',
-                message: '添加失败!'+res.data.msg
-              })
+                  type: 'info',
+                  message: '基础数据存在错误无法提交!'
+                })
+              return false
             }
-          }).catch((err) => {
-            console.log(err)
-            this.$message({
-              type: 'info',
-              message: '添加失败!'
-            })
           })
         }else{
           this.$http.put(this.baseUrl + 'stationInfo/stationBaseInfo', qs.stringify(ruleForm))

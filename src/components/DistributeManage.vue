@@ -24,8 +24,6 @@
 							<el-tooltip class="item" effect="dark" content="删除客户端组" placement="top">
 							<span class="menubtn delete" @click="groupDeleteEvent($event)"></span>
 							</el-tooltip>
-
-
 						</div>
 					</div>
 					<div
@@ -337,7 +335,7 @@
 	//客户端组设置函数显示设置窗
 	groupOptions ($event){
 		console.log($event)
-		$event.cancelBubble=true
+		// $event.cancelBubble=true
 		// $event.stopPropagation()
 		this.disabled = true
 		this.addGroup = true
@@ -346,7 +344,7 @@
 	},
 	//客户端组删除函数
 	groupDeleteEvent ($event) {
-		$event.cancelBubble=true
+		// $event.cancelBubble=true
 		// $event.stopPropagation()
 		setTimeout(()=> {
 			this.$confirm('此操作将删除该客户端组, 是否继续?', '提示', {
