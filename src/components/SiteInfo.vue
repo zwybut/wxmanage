@@ -33,7 +33,8 @@
 		<div class='mainR l'>
 			<div separator="/" class="breadcrumb">
 				<span>{{third}}</span> ( <span>{{first}}</span> · <span>{{second}}</span> )
-				<el-button type="danger"class="addOrDelete delete r" size="mini" plain @click="deleteSite">删除站点</el-button>
+				<el-button type="danger"class="addOrDelete delete r" size="mini" plain @click="deleteSite" v-if="showBtn">删除站点</el-button>
+				<el-button type="primary"class="addOrDelete add r" size="mini" plain @click="back" v-else="showBtn">返回</el-button>
 				<el-button type="primary"class="addOrDelete add r" size="mini" plain @click="addSite">新增站点</el-button>
 			</div>
 			<el-menu :default-active="activeIndex"
@@ -110,6 +111,12 @@ export default{
 		},
 	},
   methods: {
+	back () {
+		this.$router.push('/SiteInfo')
+		this.getTreeNode()
+		this.showBtn = true
+		this.$store.commit('addSite',false)
+	},
 	deleteSite (){
 		this.$confirm('此操作将删除该站点, 是否继续?', '提示', {				//删除弹出窗
 			confirmButtonText: '确定',
@@ -170,113 +177,114 @@ export default{
 	activeMenu () {																	//将header默认显示页设为站点信息
       this.$store.commit('activeMenu', '3')
     },
-		getTreeNode () {														//获取tree
-				this.treeloading = true
-				this.$http.get(this.baseUrl + 'comm/stationInfo', qs.stringify({}))
-				.then((res) => {
-					let data = res.data.data
-					let resultData = {}
-					var treeData = []
-					for (let i = 0; i < data.length; i++) {
-						var shi = data[i].shi
-						if(resultData[shi]){
-							resultData[shi].push(data[i])
-						}
-						else{
-							var shiData = []
-							shiData.push(data[i])
-							resultData[shi] = shiData
-							var childrenTree = {}
-							childrenTree.label = shi
-							childrenTree.id = data[i].addvcd
-							childrenTree.children = []
-							treeData.push(childrenTree)
-						}
+	getTreeNode () {														//获取tree
+		this.treeloading = true
+		this.$http.get(this.baseUrl + 'comm/stationInfo', qs.stringify({}))
+		.then((res) => {
+			console.log(res)
+			let data = res.data.data
+			let resultData = {}
+			var treeData = []
+			for (let i = 0; i < data.length; i++) {
+				var shi = data[i].shi
+				if(resultData[shi]){
+					resultData[shi].push(data[i])
+				}
+				else{
+					var shiData = []
+					shiData.push(data[i])
+					resultData[shi] = shiData
+					var childrenTree = {}
+					childrenTree.label = shi
+					childrenTree.id = data[i].addvcd
+					childrenTree.children = []
+					treeData.push(childrenTree)
+				}
+			}
+			for (let i = 0; i < treeData.length; i++) {
+				var stationList = resultData[treeData[i].label]
+				var sttpTree = [{label:"雨量站",children:[]},{label:"水库站",children:[]},{label:"河道站",children:[]},
+				{label:"闸坝站",children:[]},{label:"潮位站",children:[]},{label:"蒸发站",children:[]}]
+				for (let j = 0; j < stationList.length; j++) {
+					var sttp = stationList[j].sttp
+					sttp = sttp.slice(0,1)
+					var stcdTree = {label:stationList[j].stnm,stcd:stationList[j].stcd,sttp:stationList[j].sttp,district:stationList[j].xian,item:stationList[j].item}
+					switch(sttp){
+						case "P" :
+							sttpTree[0].children.push(stcdTree)
+							break
+						case "R" :
+							sttpTree[1].children.push(stcdTree)
+							break
+						case "Z" :
+							sttpTree[2].children.push(stcdTree)
+							break
+						case "D" :
+							sttpTree[3].children.push(stcdTree)
+							break
+						case "T" :
+							sttpTree[4].children.push(stcdTree)
+							break
+						case "E" :
+							sttpTree[5].children.push(stcdTree)
+							break
 					}
-					for (let i = 0; i < treeData.length; i++) {
-						var stationList = resultData[treeData[i].label]
-						var sttpTree = [{label:"雨量站",children:[]},{label:"水库站",children:[]},{label:"河道站",children:[]},
-						{label:"闸坝站",children:[]},{label:"潮位站",children:[]},{label:"蒸发站",children:[]}]
-						for (let j = 0; j < stationList.length; j++) {
-							var sttp = stationList[j].sttp
-							sttp = sttp.slice(0,1)
-							var stcdTree = {label:stationList[j].stnm,stcd:stationList[j].stcd,sttp:stationList[j].sttp,district:stationList[j].xian,item:stationList[j].item}
-							switch(sttp){
-								case "P" :
-									sttpTree[0].children.push(stcdTree)
-									break
-								case "R" :
-									sttpTree[1].children.push(stcdTree)
-									break
-								case "Z" :
-									sttpTree[2].children.push(stcdTree)
-									break
-								case "D" :
-									sttpTree[3].children.push(stcdTree)
-									break
-								case "T" :
-									sttpTree[4].children.push(stcdTree)
-									break
-								case "E" :
-									sttpTree[5].children.push(stcdTree)
-									break
-							}
-						}
-						for (let i = 0;i < sttpTree.length; i++) {
-							if(!sttpTree[i].children.length){
-								sttpTree.splice(i,1)
-								i--
-							}
-						}
-						treeData[i].children=sttpTree;
+				}
+				for (let i = 0;i < sttpTree.length; i++) {
+					if(!sttpTree[i].children.length){
+						sttpTree.splice(i,1)
+						i--
 					}
-					this.treeNode = treeData
-						if(this.$store.state.siteOption){
-							let siteObj = this.$store.state.siteObj
-							this.first = siteObj.shi
-							this.second = siteObj.sttp
-							this.third = siteObj.stnm
-							this.showNode.push(this.trim(siteObj.stnm))
-							setTimeout(()=>{
-								this.$refs.tree.setCurrentKey(this.trim(siteObj.stnm))												//设置tree默认第一个选中
-								this.$store.commit('siteStcd',siteObj.stcd)												//将stcd存储至store
-								this.$store.commit('siteSttp',this.sttpTransformReturn(siteObj.sttp))                       //将sttp存储至store
-								this.$router.push('/SiteInfo/BasicInfo')	
-								this.tree_input = this.trim(siteObj.stnm)
-								document.getElementById("hidden_").click()
-								console.log(siteObj.sttp)
-							}, 50)
-						}else{
-							let first = treeData[0].children
-							let second = first[0].children
-							let show = second[0].label
-							let STTP = second[0].sttp
-							let STCD = second[0].stcd
-							
-							setTimeout(()=>{
-								
-								if(!this.$store.state.addOrDeleteEnd){
-									this.first = treeData[0].label
-									this.second = first[0].label
-									this.third = show
-									console.log(this.showNode)
-									this.showNode.push(show)
-									this.$refs.tree.setCurrentKey(show)												//设置tree默认第一个选中
-									this.$store.commit('siteStcd',STCD)												//将stcd存储至store
-									this.$store.commit('siteSttp',STTP)                       //将sttp存储至store
-								}else{
-									this.$store.commit('addOrDeleteEnd',false) 
-								}
-								
-							}, 50)
-							
-							this.$router.push('/SiteInfo/BasicInfo')										//展示站点基础信息
-						}
+				}
+				treeData[i].children=sttpTree;
+			}
+			this.treeNode = treeData
+				if(this.$store.state.siteOption){
+					let siteObj = this.$store.state.siteObj
+					this.first = siteObj.shi
+					this.second = siteObj.sttp
+					this.third = siteObj.stnm
+					this.showNode.push(this.trim(siteObj.stnm))
+					setTimeout(()=>{
+						this.$refs.tree.setCurrentKey(this.trim(siteObj.stnm))												//设置tree默认第一个选中
+						this.$store.commit('siteStcd',siteObj.stcd)												//将stcd存储至store
+						this.$store.commit('siteSttp',this.sttpTransformReturn(siteObj.sttp))                       //将sttp存储至store
+						this.$router.push('/SiteInfo/BasicInfo')	
+						this.tree_input = this.trim(siteObj.stnm)
+						document.getElementById("hidden_").click()
+						console.log(siteObj.sttp)
+					}, 50)
+				}else{
+					let first = treeData[0].children
+					let second = first[0].children
+					let show = second[0].label
+					let STTP = second[0].sttp
+					let STCD = second[0].stcd
 					
-					this.treeloading = false
-				}).catch(function (err) {
-					console.log(err)
-				})
+					setTimeout(()=>{
+						
+						if(!this.$store.state.addOrDeleteEnd){
+							this.first = treeData[0].label
+							this.second = first[0].label
+							this.third = show
+							console.log(this.showNode)
+							this.showNode.push(show)
+							this.$refs.tree.setCurrentKey(show)												//设置tree默认第一个选中
+							this.$store.commit('siteStcd',STCD)												//将stcd存储至store
+							this.$store.commit('siteSttp',STTP)                       //将sttp存储至store
+						}else{
+							this.$store.commit('addOrDeleteEnd',false) 
+						}
+						
+					}, 50)
+					
+					this.$router.push('/SiteInfo/BasicInfo')										//展示站点基础信息
+				}
+			
+			this.treeloading = false
+		}).catch(function (err) {
+			console.log(err)
+		})
       
     },
 
@@ -293,7 +301,7 @@ export default{
 <style scoped>
   .main{
 		overflow:visible;
-		height:calc(100% - 60px)
+		height:calc(100% - 60px);
 	}
 	.mainL{
 		width:260px;
@@ -350,7 +358,7 @@ export default{
 	.content{
 		border:1px solid #e6e6e6;
 		border-top:0;
-		height:calc(100% - 40px - 2px)
+		height:calc(100% - 40px - 2px);
 	}
 	.tabs{
 		height:40px;

@@ -8,17 +8,33 @@ import axios from 'axios'
 import sha1 from 'js-sha1'
 import { store } from './store/store'
 import { config } from '../static/config.js'
+import 'babel-polyfill'
+
 //将axios绑到原型上，方便继承
 Vue.prototype.$http = axios
 Vue.prototype.$sha1 = sha1
-    //以阻止 vue 在启动时生成生产提示
-Vue.config.productionTip = false
 Vue.prototype.baseUrl = config.baseUrl
 Vue.prototype.notAuthUrl = config.notAuthUrl
+    //以阻止 vue 在启动时生成生产提示
+Vue.config.productionTip = false
     //解决ajax跨域请求
 axios.defaults.withCredentials = true
     /* eslint-disable no-new */
     //时间格式转换函数
+axios.interceptors.response.use((response) => {
+    // token 已过期，重定向到登录页面  
+    if (response.data.code == -4) {
+        sessionStorage.clear()
+        router.replace({
+            path: '/Login',
+            query: { redirect: router.currentRoute.fullPath }
+        })
+    }
+    return response
+}, (error) => {
+    // Do something with response error  
+    return Promise.reject(error)
+})
 Vue.prototype.timeTrans = (tm) => {
         let now = new Date(tm)
         let year = now.getFullYear()

@@ -15,13 +15,16 @@ export const store = new Vuex.Store({
         siteOption: false,
         siteObj: {},
         addSite: false,
-        addOrDeleteEnd: false
+        addOrDeleteEnd: false,
+        baseJson: {}
     },
     getters: {
         getUser: state => state.floodReportUser
     },
     mutations: {
-
+        baseJson: (state, baseJson) => {
+            state.baseJson = baseJson
+        },
         siteStcd: (state, siteStcd) => {
             state.siteStcd = siteStcd
         },

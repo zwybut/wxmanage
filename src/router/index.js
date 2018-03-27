@@ -8,6 +8,7 @@ import OperationLog from '@/components/OperationLog'
 import SiteInfo from '@/components/SiteInfo'
 import SiteManage from '@/components/SiteManage'
 import UserManage from '@/components/UserManage'
+import Home from '@/components/home'
 import BasicInfo from '@/components/SiteInfo/BasicInfo'
 import FloodProjectCustom from '@/components/SiteInfo/FloodProjectCustom'
 import FloodNumOption from '@/components/SiteInfo/FloodNumOption'
@@ -18,63 +19,57 @@ Vue.use(Router)
 export default new Router({
     // mode: 'history',
     routes: [{
-        path: '/DataSearch',
-        name: 'DataSearch',
-        component: DataSearch
-    }, {
-        path: '/FloodReportSearch',
-        name: 'FloodReportSearch',
-        component: FloodReportSearch
-    }, {
-        path: '/FloodReportUser',
-        name: 'FloodReportUser',
-        meta: {
-            requireAuth: true
-        },
-        component: FloodReportUser
-    }, {
         path: '/',
         component: Login
     }, {
         path: '/Login',
-        name: 'Login',
         component: Login
     }, {
-        path: '/OperationLog',
-        name: 'OperationLog',
-        component: OperationLog
-    }, {
-        path: '/SiteInfo',
-        name: 'SiteInfo',
-        component: SiteInfo,
+        path: '/home',
+        component: Home,
         children: [{
-            path: 'BasicInfo',
-            name: 'BasicInfo',
-            component: BasicInfo
+            path: '/',
+            component: FloodReportUser
         }, {
-            path: 'FloodProjectCustom',
-            name: 'FloodProjectCustom',
-            component: FloodProjectCustom
+            path: '/DataSearch',
+            component: DataSearch
         }, {
-            path: 'FloodNumOption',
-            name: 'FloodNumOption',
-            component: FloodNumOption
+            path: '/FloodReportSearch',
+            component: FloodReportSearch
+        }, {
+            path: '/FloodReportUser',
+            meta: {
+                requireAuth: true
+            },
+            component: FloodReportUser
+        }, {
+            path: '/OperationLog',
+            component: OperationLog
+        }, {
+            path: '/SiteInfo',
+            component: SiteInfo,
+            children: [{
+                path: 'BasicInfo',
+                component: BasicInfo
+            }, {
+                path: 'FloodProjectCustom',
+                component: FloodProjectCustom
+            }, {
+                path: 'FloodNumOption',
+                component: FloodNumOption
+            }]
+        }, {
+            path: '/SiteManage',
+            component: SiteManage
+        }, {
+            path: '/DistributeManage',
+            component: DistributeManage
+        }, {
+            path: '/UserManage',
+            component: UserManage
+        }, {
+            path: '/MenuManage',
+            component: MenuManage
         }]
-    }, {
-        path: '/SiteManage',
-        name: 'SiteManage',
-        component: SiteManage
-    }, {
-        path: '/DistributeManage',
-        name: 'DistributeManage',
-        component: DistributeManage
-    }, {
-        path: '/UserManage',
-        name: 'UserManage',
-        component: UserManage
-    }, {
-        path: '/MenuManage',
-        name: 'MenuManage',
-        component: MenuManage
     }]
 })

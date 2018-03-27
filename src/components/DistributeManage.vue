@@ -34,7 +34,7 @@
 						<el-menu-item v-for="(item,index) in childrenNode" :key="index" :index="item.nId" class="usingItem unitList clear" >
 							<i class="num">{{parseInt(index)+1}}</i>
 							<div class="menu_content clear l">
-								<span class="unitName">{{item.nName}}</span><span class="dateTime">{{item.lastTm}}</span><span>{{item.edition}}</span>
+								<span class="unitName">{{item.nName}}</span><span class="dateTime">{{item.lastTm}}</span>
 							</div>
 							<div class="menu_btns l">
 								<el-tooltip class="item" effect="dark" content="启用停用" placement="top">
@@ -156,8 +156,14 @@
 					<el-form-item label="分发名称" :label-width="formLabelWidth" size="small">
 						<el-input v-model="optionForm.nName" size="small" ></el-input>
 					</el-form-item>
-					<el-form-item label="序列号" :label-width="formLabelWidth" size="small">
-						<el-input v-model="optionForm.pcId" size="small" ></el-input>
+					<el-form-item label="最新时间" :label-width="formLabelWidth" size="small">
+						<el-date-picker
+						v-model="optionForm.lastTm"
+						type="datetime"
+						class="lastTm"
+						placeholder="选择日期时间"
+						:clearable="falseBoolen">
+						</el-date-picker>					
 					</el-form-item>
 					<el-form-item label="启用标识" :label-width="formLabelWidth" size="small">
 						<el-checkbox v-model="optionForm.isUsing"></el-checkbox>
@@ -179,6 +185,7 @@
 	  name: 'SiteManage',
 	  data () {
 	    return {
+		  falseBoolen: false, 
 	      tableData: [],
 	      props: {
 			label: 'label',
@@ -276,6 +283,7 @@
 				for (let i = 0; i< data.length; i++) {
 					let obj = data[i]
 					obj.nId = data[i].nId.toString()
+					obj.lastTm = this.timeTrans(data[i].lastTm)
 					arr.push(obj)
 				}
 				this.childrenNode = arr
@@ -335,8 +343,6 @@
 	//客户端组设置函数显示设置窗
 	groupOptions ($event){
 		console.log($event)
-		// $event.cancelBubble=true
-		// $event.stopPropagation()
 		this.disabled = true
 		this.addGroup = true
 		this.option = true
@@ -344,8 +350,6 @@
 	},
 	//客户端组删除函数
 	groupDeleteEvent ($event) {
-		// $event.cancelBubble=true
-		// $event.stopPropagation()
 		setTimeout(()=> {
 			this.$confirm('此操作将删除该客户端组, 是否继续?', '提示', {
 				confirmButtonText: '确定',
@@ -381,7 +385,12 @@
 			.then((res) => {
 				if(res.data.code == 0){
 					this.optionForm = res.data.data
-					this.optionForm.isUsing = res.data.data.isUsing == "true"?true:false
+					if(this.optionForm.isUsing == "true"){
+						this.optionForm.isUsing = true
+					}else{
+						this.optionForm.isUsing = false
+					}
+					console.log(this.optionForm.isUsing)
 				}
 			}).catch((err) => {
 				console.log(err)
@@ -390,8 +399,11 @@
 	},
 	//设置窗提交函数
 	sureOption (){
+		console.log(this.optionForm)
+		this.optionForm.configTm = null
 		if(this.nId == ''){
 			console.log(this.optionForm)
+			
 			this.$http.put(this.baseUrl + 'nodeManage/updateNodeGroup', qs.stringify(this.optionForm))
 			.then((res) => {
 				console.log(res)
@@ -456,6 +468,9 @@
 					})
 				}
 			}else{
+				console.log(this.optionForm)
+				this.optionForm.lastTm = this.timeTrans(this.optionForm.lastTm)
+				
 				this.$http.put(this.baseUrl + 'nodeManage/node', qs.stringify(this.optionForm))
 				.then((res) => {
 					if(res.data.code == 0){
@@ -464,7 +479,6 @@
 							message: '修改成功!'
 						})
 						this.option = false
-						console.log(this.groupId)
 						this.open(this.groupId)
 					}else{
 						this.$message({
@@ -667,7 +681,7 @@
 					}
 					var sttp = stationList[j].sttp
 					sttp = sttp.slice(0,1)
-					var stcdTree = {label:stationList[j].stnm,stcd:stationList[j].stcd,sttp:stationList[j].sttp,district:stationList[j].xian,item:stationList[j].item}
+					var stcdTree = {label:stationList[j].stnm+"("+stationList[j].xian+")",stcd:stationList[j].stcd,sttp:stationList[j].sttp,district:stationList[j].xian,item:stationList[j].item}
 					switch(sttp){
 						case "P" :
 							sttpTree[0].children.push(stcdTree)
@@ -807,13 +821,14 @@
 	.content{
 		border:1px solid #e6e6e6;
 		border-top:0;
-		height:calc(100% - 40px - 2px)
+		height:calc(100% - 40px - 2px);
 	}
 	.mainLContent{
 		overflow:hidden;
 	}
 	.distribute_menu{
 		width:calc(100% - 36px);
+		width:-webkit-calc(100% - 36px);
 		margin-left:18px;
 		height:calc(100% - 36px);
 		margin-top:18px;
@@ -920,7 +935,7 @@
 	}
 	.mainRContent{
 		overflow:auto;
-		height: calc(100% - 75px)
+		height: calc(100% - 75px);
 	}
 	.deleteBtn{
 		display:inline-block;
@@ -970,5 +985,7 @@
 		line-height:40px;
 		float:left;
 	}
-	
+	.lastTm{
+		width:284px;
+	}
 </style>

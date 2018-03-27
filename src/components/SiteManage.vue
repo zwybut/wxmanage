@@ -19,7 +19,7 @@
 			element-loading-background="rgba(255, 255, 255, 1)">
 				<ul>
 					<li class='clear liNodes' @click="choose($event)" v-for='item in userList'><img :src="item.headimgurl" class='l img'></img>
-						<div class='l'><span style="display:none">{{item.openId}}</span><span class="name">{{item.realName}}</span><span class="tel">{{item.cellPhone}}</span><br /><span class="adress">{{item.department}}</span></div>
+						<div class='l userInfo'><span style="display:none">{{item.openId}}</span><span class="name">{{item.realName}}</span><span class="tel">{{item.cellPhone}}</span><br /><span class="adress">{{item.department}}</span></div>
 						<span class='chat r' @click="reply = true"></span>
 					</li>
 				</ul>
@@ -84,7 +84,6 @@
 			      	 <template slot-scope="scope">
 						   <el-button type="text" size="small" @click="siteOption(scope)">配置</el-button>
 				           <el-button type="text" size="small" class="deleteBtn" @click="deleteSite(scope)"></el-button>
-						
 				     </template>
 			      </el-table-column>
 			    </el-table-column>
@@ -413,7 +412,7 @@
 							}
 							var sttp = stationList[j].sttp
 							sttp = sttp.slice(0,1)
-							var stcdTree = {label:stationList[j].stnm,stcd:stationList[j].stcd,sttp:stationList[j].sttp,district:stationList[j].xian,item:stationList[j].item}
+							var stcdTree = {label:stationList[j].stnm+'('+stationList[j].xian+')',stcd:stationList[j].stcd,sttp:stationList[j].sttp,district:stationList[j].xian,item:stationList[j].item}
 							switch(sttp){
 								case "P" :
 									sttpTree[0].children.push(stcdTree)
@@ -519,22 +518,19 @@
 					let nodeChild = Li.children[1]
 					let openId = nodeChild.children[0].innerHTML
 					this.openId = openId
-					this.getTableData(openId)
-				}
-			},
-			userFilter () {
-				if(this.$store.state.userOption){
-					setTimeout(() => {
-						this.search_input = this.$store.state.userObj.realName
-						document.getElementById("hidden").click()
-					}, 30)
-					
+					this.getTableData(openId) 
+					if(this.$store.state.userOption){
+						setTimeout(() => {
+							this.search_input = this.$store.state.userObj.realName
+							document.getElementById("hidden").click()
+							this.$store.commit('userOption')
+						}, 30)
+					}
 				}
 			},
 			getUserList (phcd) {						//获取用户列表
 				this.$http.post(this.baseUrl + 'WXUser/wxuser', qs.stringify({addvcd: null, sex: null, state: null, phcd: phcd}))
 				.then((res) => {
-					
 					console.log(res.data)
 					let data = res.data.data
 					this.total = data.length
@@ -569,14 +565,11 @@
 				}
 			},
 		},
-		created(){
+		mounted() {
 			this.$store.commit('siteOption',false)
 			this.activeMenu()
 			this.getUserList()												//通过函数获取
 			this.getClientHeight()
-		},
-		mounted() {
-			this.userFilter()
 		}
 	}
 </script>
@@ -612,7 +605,7 @@
 	.content{
 		border:1px solid #e6e6e6;
 		border-top:0;
-		height:calc(100% - 40px - 2px)
+		height:calc(100% - 40px - 2px);
 	}
 	.mainLContent{
 		overflow:auto;
@@ -635,16 +628,23 @@
 	.mainLContent span{
 		line-height:21px
 	}
+	.mainLContent .userInfo{
+		width:180px;
+		overflow:hidden;
+	}
 	.mainLContent .name{
 		display:inline-block;
 		font-size:13px;
 		margin-right:5px;
 		color:#1670E0;
-		width:40px;
+		/* width:40px; */
 		font-weight:600;
 	}
 	.mainLContent .adress{
+		display:block;
 		color:#808080;
+		width:180px;
+		overflow:hidden;
 	}
 	.mainLContent .chat{
 		display:block;
@@ -667,7 +667,7 @@
 	}
 	.mainCContent{
 		padding-top:18px;
-		height:calc(100% - 40px - 20px)
+		height:calc(100% - 40px - 20px);
 	}
 	.allDeleteBtn{
 		float:right;
@@ -682,7 +682,7 @@
 	}
 	.mainRContent{
 		overflow:auto;
-		height: calc(100% - 75px)
+		height: calc(100% - 75px);
 	}
 	.deleteBtn{
 		display:inline-block;

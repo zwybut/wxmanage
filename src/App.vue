@@ -1,65 +1,6 @@
 <template>
   <div id="app">
-    <!-- 头部导航 -->
-    <header class="header" v-if="showHeader()">
-    	<img class="logo l" src="./assets/wx_logo.png"/>
-    	<span id="" class="sysTitle l" >微信报汛管理系统</span>
-    <el-menu
-		  class="el-menu-demo l"
-		  mode="horizontal"
-		  background-color="#1670e0"
-		  text-color="#fff"
-		  active-background-color="#0c58b6"
-		  active-text-color="#fff"
-		  :default-active="activeMenu"
-		  >
-		  <el-menu-item index="1"><router-link to="/FloodReportUser">报汛用户管理</router-link></el-menu-item>
-		  <el-menu-item index="2"><router-link to="/SiteManage">用户站点绑定</router-link></el-menu-item>
-		  <el-menu-item index="3"><router-link to="/SiteInfo">站点配置</router-link></el-menu-item>
-		  <el-menu-item index="4"><router-link to="/FloodReportSearch">原报文查询</router-link></el-menu-item>
-			<el-menu-item index="6"><router-link to="/DistributeManage">分发管理</router-link></el-menu-item>
-		  <!-- <el-menu-item index="7"><router-link to="/OperationLog">用户日志查询</router-link></el-menu-item> -->
-		  <el-menu-item index="8"><router-link to="/UserManage">管理员信息管理</router-link></el-menu-item>
-			<el-menu-item index="9"><router-link to="/MenuManage">公众号菜单配置</router-link></el-menu-item>
-		</el-menu>
-		<span class="userImage r"></span>
-		<el-dropdown class="r" @command='handleCommand'>
-		  <span class="el-dropdown-link">
-		    <i class="el-icon-arrow-down el-icon--left"></i>欢迎您，{{showLoginName()}}
-		  </span>
-		  <el-dropdown-menu slot="dropdown">
-				<el-dropdown-item command='xg'>修改密码</el-dropdown-item>
-		    <el-dropdown-item command='zx'>用户注销</el-dropdown-item>
-		  </el-dropdown-menu>
-		</el-dropdown>
-    </header>
-		<el-dialog title="用户密码修改" :visible.sync="dialogFormVisible" id="passwordChange" width="500px">
-			<el-form :model="form" :rules="rules" ref="form">
-				<el-form-item label="用户名" :label-width="formLabelWidth">
-					<el-input type="text" v-model="form.userName" auto-complete="off" disabled></el-input>
-				</el-form-item>
-				<el-form-item label="旧密码" :label-width="formLabelWidth" prop="oldPassworld">
-					<el-input type="password" v-model="form.oldPassworld" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="新密码" :label-width="formLabelWidth" prop="newPassworld_1">
-					<el-input type="password" v-model="form.newPassworld_1" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="确认新密码" :label-width="formLabelWidth" prop="newPassworld_2">
-					<el-input type="password" v-model="form.newPassworld_2" auto-complete="off"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click="resetForm('form')" size="small">重置</el-button>
-				<el-button type="primary" @click="submitForm('form')" size="small" class='buttons'>确 定</el-button>
-				<el-button @click="dialogFormVisible = false" size="small" class='buttons'>取 消</el-button>
-				
-			</div>
-		</el-dialog>
-    <main >
-    	<router-view></router-view>
-    </main>
-
-		
+	<router-view/>
   </div>
   </template>
 <script>
@@ -69,164 +10,33 @@
 	Vue.use(Element)
 export default {
 	name: 'app',
-	data () {
-		var validatePass = (rule, value, callback) => {
-			if (value === '') {
-				callback(new Error('请输入密码'))
-			} else {
-				callback()
-			}
-		};
-		var validatePass1 = (rule, value, callback) => {
-			if (value === '') {
-				callback(new Error('请输入密码'))
-			}else {
-				if (this.form.newPassworld_2 !== '') {
-					this.$refs.form.validateField('newPassworld_2')
-				}
-				callback()
-			}
-		};
-		var validatePass2 = (rule, value, callback) => {
-			if (value === '') {
-				callback(new Error('请再次输入密码'))
-			} else if (value !== this.form.newPassworld_1) {
-				callback(new Error('两次输入密码不一致!'))
-			} else {
-				callback()
-			}
-		};
-    return {
-			activeMenu: '1',           //设置header默认选中为报汛用户查询
-			dialogFormVisible: false,
-			form: {
-					userName:'',
-					oldPassworld:'',
-					newPassworld_1:'',
-					newPassworld_2:''
-        },
-			formLabelWidth: '80px',
-			rules: {
-				oldPassworld: [
-					{ validator: validatePass, trigger: 'blur' }
-				],
-				newPassworld_1: [
-					{ validator: validatePass1, trigger: 'blur' }
-				],
-				newPassworld_2: [
-					{ validator: validatePass2, trigger: 'blur' }
-				]
-			}
-		}
-	},
-	computed: {
-		active() {                 //activeMenu
-			return this.$store.state.activeMenu
-		}
-	},
-	watch: {
-		dialogFormVisible(val){
-			if(!val){
-				this.resetForm('form')
-			}
-		},
-		active(val){                 //监听
-			if (val) {
-				console.log(val)
-				this.setActiveMenu()      
-			}
-		}
-	},
-  methods: {
-		resetForm(formName) {
-			this.$refs[formName].resetFields()
-		},
-		submitForm(formName) {
-			
-			this.$refs[formName].validate((valid) => {
-				if (valid) {				
-					this.$http.post(this.baseUrl + 'userManage/user/' + this.form.userName, qs.stringify({password:this.$sha1(this.form.oldPassworld),newPassword:this.$sha1(this.form.newPassworld_2)}))
-					.then((res) => {
-						console.log(res)
-						if(res.data.code == 0){
-							this.$message({
-								type: 'success',
-								message: '修改成功!'
-							})
-							this.dialogFormVisible = false
-						}else if(res.data.code == -5){
-							this.$message({
-								type: 'info',
-								message: '密码错误请重试!'
-							})
-						}else{
-							this.$message({
-								type: 'info',
-								message: '修改失败!'
-							})
-						}
-					}).catch((err) => {
-						console.log(err)
-					})
-				} else {
-					this.$message({
-						type: 'info',
-						message: '新密码不一致!'
-					})
-					return false
-				}
-			});
-		},
-    showHeader () {							//控制header是否显示
-      return this.$store.state.show
-    },
-    showLoginName () {					//显示登陆名
-      let sStorage = window.sessionStorage			//从sessionStorage获取用户登陆名
-      return sStorage['loginName']
-		},
-		handleCommand(command){
-			if(command == 'zx'){
-				this.userOff()
-			}else if(command == 'xg'){
-				this.dialogFormVisible = true
-				let sStorage = window.sessionStorage
-			if (sStorage['loginName']) {							//存在，将store中的show置为true
-				this.form.userName = sStorage['loginName']
-      } else {																//不存在，跳转至登陆页面
-        this.$router.push('/Login')
-      }
-				
-			}
-		},
-    userOff () {								//用户注销
-	  this.$http.post(this.baseUrl + 'userManage/logout',{})
-      .then((res) => {
-		console.log(res)
-		this.$router.push('/Login')
-		this.$store.commit('show', false)
-		let sStorage = window.sessionStorage		//清除sessionStorage中的用户名
-		sStorage.clear()
-      }).catch((err) => {
-        console.log(err)
-      })
+	methods:{
+	myBrowser(){
+		var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串  
+		var isOpera = userAgent.indexOf("Opera") > -1; //判断是否Opera浏览器  
+		var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera; //判断是否IE浏览器  
+		var isEdge = userAgent.indexOf("Windows NT 6.1; Trident/7.0;") > -1 && !isIE; //判断是否IE的Edge浏览器  
+		var isFF = userAgent.indexOf("Firefox") > -1; //判断是否Firefox浏览器  
+		var isSafari = userAgent.indexOf("Safari") > -1 && userAgent.indexOf("Chrome") == -1; //判断是否Safari浏览器  
+		var isChrome = userAgent.indexOf("Chrome") > -1 && userAgent.indexOf("Safari") > -1; //判断Chrome浏览器  
+		if (!isChrome) {
 
-    },
-    getStorage () {										//获取sessionStorage中的用户名
-      let sStorage = window.sessionStorage
-      if (sStorage['loginName']) {							//存在，将store中的show置为true
-        this.$store.commit('show', true)
-      } else {																//不存在，跳转至登陆页面
-        this.$router.push('/Login')
-      }
-		},
-		setActiveMenu () {							//设置header默认选中为store中的activeMenu对应的页面
-			this.activeMenu = this.$store.state.activeMenu
-		}
-  },
-  mounted: function () {
-		this.setActiveMenu()
-    this.getStorage()
-  }
+			this.$alert('检测到您的浏览器版本存在兼容问题，请用Chrome浏览器打开。', '浏览器版本检测', {
+				confirmButtonText: '确定',
+				callback: action => {
+					// this.$message({
+					// type: 'info',
+					// message: `action: ${ action }`
+					// })
+				}
+			})
+		}  
+	},
+
+	},
+	mounted (){
+		this.myBrowser()
+	}
 }
 </script>
 <style>

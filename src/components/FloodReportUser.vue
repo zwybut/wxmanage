@@ -82,6 +82,7 @@
 	      <el-table-column
 	        prop="comment"
 	        label="备注说明"
+					:show-overflow-tooltip='trueBoolen'
 	        align="center">
 	      </el-table-column>
 	      <el-table-column
@@ -362,8 +363,19 @@ export default{
       	})
      }).catch(() => {})
     },
-    change () {										//刷新table函数
-      this.getTableBagin(this.addvcd[1], this.sex, this.state, this.phcd)
+		change () {										//刷新table函数
+		console.log(this.addvcd)
+		if(this.addvcd.length > 0 ){
+				if(this.addvcd.length = 1){
+						this.getTableBagin(this.addvcd[0], this.sex, this.state, this.phcd)
+				}
+				else {
+						this.getTableBagin(this.addvcd[1], this.sex, this.state, this.phcd)
+				}
+		}else{
+				this.getTableBagin(null, this.sex, this.state, this.phcd)
+		}
+      
     },
     postData () {									//获取地区信息
       this.$http.get(this.baseUrl + 'comm/addvcdTree', qs.stringify({}))
@@ -374,11 +386,13 @@ export default{
         console.log(err)
       })
     },
-    getTableBagin (addvcd, sex, state, phcd) {  										//获取table数据函数
+		getTableBagin (addvcd, sex, state, phcd) {  										//获取table数据函数
+		console.log(addvcd, sex, state, phcd)
 			this.tableloading = true
       this.$http.post(this.baseUrl + 'WXUser/wxuser', qs.stringify({addvcd: addvcd, sex: sex, state: state, phcd: phcd}))
       .then((res) => {
-        let data = res.data.data
+				let data = res.data.data
+				console.log(data)
         this.total = data.length
         let arr = []
         for (var i = 0; i < data.length ; i++) {

@@ -14,7 +14,7 @@
       :unlink-panels='trueBoolen'
        class="dateTmeBox l"
        @change="search"
-       value-format="yyyy-MM-dd HH:mm:ss" clearable >
+       value-format="yyyy-MM-dd HH:mm:ss" :clearable="falseBoolen">
      </el-date-picker>
 	      <el-select v-model="valueSttp" placeholder="站类选择" size="small" class="l select" @change="search" clearable >
 		    <el-option
@@ -134,6 +134,7 @@ export default{
   name: 'FloodReportSearch',
   data () {
     return {
+      falseBoolen: false,  
       trueBoolen: true,                       //为true的布尔值
       pickerOptions2: {                       //时间选择器
         shortcuts: [{                         //时间选择器自定义时间段

@@ -9,7 +9,7 @@
 		</p></div>
 	</header>
 	<main class="middle clear">
-		<div style="width:1366px;margin:0 auto" class="clear">
+		<div style="width:1366px;margin:0 auto;" class="clear">
 		<img class='l' src="../assets/loginPic.png" style="margin-top:148px;margin-left:270px;height:290px;width:400px"/>
 		<div class="loginBox r">
 			<h3>用户登陆</h3>
@@ -35,7 +35,7 @@
 		</div>
 	</main>
 	<footer>
-		<p>版权所有 微信管理系统 ©Copyright 2003-2015. All Rights Reserved.</p>
+		<p>版权所有 微信管理系统 ©Copyright 2003-2018. All Rights Reserved.</p>
 		<p>浙ICP备15010216号-1</p>
 	</footer>
 	</div>
@@ -101,6 +101,7 @@ export default{
   },
   methods: {
     codeChange () {
+      console.log(this.$store.state.baseJson)
       this.codeSrc = this.notAuthUrl + 'util/code?tm=' + new Date().getTime()
     },
     getTime () {
@@ -151,7 +152,7 @@ export default{
             let code = res.data.code
             console.log(res)
             if (code === 0) {
-              that.$router.push('/FloodReportUser')
+              that.$router.push('/home')
               that.$store.commit('show', true)
               that.$store.commit('loginName', that.numberValidateForm.userName)
               let sStorage = window.sessionStorage
@@ -188,7 +189,7 @@ export default{
     // this.setTime()
     let sStorage = window.sessionStorage					//清除sessionStorage中的用户名
     sStorage.clear()
-    this.codeSrc = this.notAuthUrl + 'util/code?tm=' + new Date().getTime()
+    this.codeChange()
   }
 }
 </script>
@@ -203,8 +204,8 @@ header{
 	height:60px;
 	background:#fff;
 }
-main{
-	height:calc(100% - 60px - 50px)
+.middle{
+	height:calc(100% - 60px - 50px - 35px);
 }
 footer{
 	height:50px;

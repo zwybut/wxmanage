@@ -30,7 +30,7 @@
       </el-option>
     </el-select>
   </el-form-item>
-  <el-form-item label="行政区规划" prop="addvcd">
+  <el-form-item label="行政区划" prop="addvcd">
     <el-cascader
 		    expand-trigger="hover"
 		    :options="areaChoose"
@@ -99,32 +99,27 @@ import qs from 'qs'
     data () {
       let stcdValidator = (rule, value, callback) => {
         if (!value) {
-          console.log(111111111)
           callback(new Error('站码不能为空'))
         }else{  
           console.log(value.length)
           if(value.length > 8){
-            console.log(22222222)
             callback(new Error('站码不能超过8位'))
           }else{
-            console.log(333333333)
-            this.$http.get(this.baseUrl + 'stationInfo/authStcd/' + value, qs.stringify({}))
-            .then((res) => {
-              console.log(res)
-              if(res.data.code != 0){
-                callback(new Error('站码已存在'))
-              }else{
-                callback()
-              }
+            if( this.$store.state.addSite ){
+              this.$http.get(this.baseUrl + 'stationInfo/authStcd/' + value, qs.stringify({}))
+              .then((res) => {
+                if(res.data.code != 0){
+                  callback(new Error('站码已存在'))
+                }else{
+                  callback()
+                }
 
-            }).catch((err) => {
-              console.log(err)
-            })
-            
-          }
-          
-        }
-            
+              }).catch((err) => {
+                console.log(err)
+              })
+            }
+          }         
+        }        
       }
       return {
         labelPosition: 'left',                 //label的对其方式
@@ -158,7 +153,7 @@ import qs from 'qs'
             { required: true, message: '站类不能为空！', trigger: 'blur' },
           ],
           addvcd: [
-            { required: true, message: '行政区规划不能为空！', trigger: 'blur' },
+            { required: true, message: '行政区划不能为空！', trigger: 'blur' },
           ],
           stcd: [
             {required: true,validator: stcdValidator, trigger: 'blur' , }
@@ -251,7 +246,13 @@ import qs from 'qs'
     },
     methods: {
       addvcdchange () {
-        console.log(this.addvcdVal)
+        if(this.addvcdVal[1]){
+          this.ruleForm.addvcd = this.addvcdVal[1]
+        }else{
+          this.ruleForm.addvcd = this.addvcdVal[0]
+        }
+        
+        console.log(this.ruleForm.addvcd)
       },
       addvcdData () {									//获取地区信息
         this.$http.get(this.baseUrl + 'comm/addvcdTree', qs.stringify({}))
@@ -268,10 +269,11 @@ import qs from 'qs'
         .then((res) => {
           if(res.data.code === 0){
             let data = res.data.data
+            
             let obj = data
             let fatherAddvcd
             if(data.addvcd.lastIndexOf('00')!=-1){
-              fatherAddvcd = data.addvcd.substring(0,2)+'0000'
+              fatherAddvcd = data.addvcd
             }
             else{
               fatherAddvcd = data.addvcd.substring(0,4)+'00'
@@ -281,16 +283,15 @@ import qs from 'qs'
             if(data.esstym&&data.esstym.length === 6){
               obj.esstym = data.esstym.substring(0,4)+'-'+data.esstym.substring(4)
             }else{
-              obj.esstym = ''
+              obj.esstym = null
             }
             if(data.bgfrym&&data.bgfrym.length === 6){
               obj.bgfrym = data.bgfrym.substring(0,4)+'-'+data.bgfrym.substring(4)
             }else{
-              obj.bgfrym = ''
+              obj.bgfrym = null
             }
-            obj.item = data.item === null?'-':data.item
             this.ruleForm = obj
-            if(data.item){
+            if(data.item != null){
               this.itemValue = data.item.split('')
             }else{
               this.itemValue = []
@@ -302,13 +303,18 @@ import qs from 'qs'
       },
       changed () {                            //修改站点基础信息后提交的函数
         this.loading = true
-        let ruleForm = JSON.parse(JSON.stringify(this.ruleForm))
-        ruleForm.addvcd = this.addvcdVal[1]
+        let ruleForm = this.ruleForm
         if(ruleForm.esstym) ruleForm.esstym = ruleForm.esstym.split('-')[0]+ruleForm.esstym.split('-')[1]
         if(ruleForm.bgfrym) ruleForm.bgfrym = ruleForm.bgfrym.split('-')[0]+ruleForm.bgfrym.split('-')[1]
-        ruleForm.item = this.itemValue.join('')
-
-        console.log(this.$store.state.addSite)
+        for (let key in ruleForm) {
+          if(ruleForm[key] == '' || ruleForm[key] == null){
+            delete ruleForm[key]
+          }
+        }
+        console.log(ruleForm)
+        if(this.itemValue.length > 0){
+          ruleForm.item = this.itemValue.join('')
+        }
         if(this.$store.state.addSite){
           this.$refs['ruleForm'].validate((valid) => {
           if (valid) {

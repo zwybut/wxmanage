@@ -61,8 +61,8 @@
 			<div class="projectBox">
 				<span class="projectName">水位</span>
 				<div  class="checkList">		
-					<el-checkbox label="瞬时水位" v-model="TTcheckList['ST_RIVER_R|Z']" alt="ST_RIVER_R|Z" type="Z" @change="checkChange"></el-checkbox>
-					<el-checkbox label="水势" v-model="TTcheckList['ST_RIVER_R|WPTN']" alt="ST_RIVER_R|WPTN" @change="checkChange"></el-checkbox>
+					<el-checkbox label="瞬时水位" v-model="TTcheckList['ST_TIDE_R|TDZ']" alt="ST_TIDE_R|TDZ" type="Z" @change="checkChange"></el-checkbox>
+					<el-checkbox label="水势" v-model="TTcheckList['ST_TIDE_R|TDPTN']" alt="ST_TIDE_R|TDPTN" @change="checkChange"></el-checkbox>
 			  </div>
 			</div>
 			<div class="projectBox">
@@ -198,33 +198,42 @@
 			    <el-checkbox label="目前天气" v-model="DDcheckList['ST_PPTN_R|WTH']" alt="ST_PPTN_R|WTH" @change="checkChange"></el-checkbox>
 					<el-checkbox label="日蒸发量" v-model="DDcheckList['ST_DAYEV_R|DYE']" alt="ST_DAYEV_R|DYE" type="DYE" @change="checkChange"></el-checkbox>
 			    <el-checkbox label="蒸发器类型" v-model="DDcheckList['ST_DAYEV_R|EPTP']" alt="ST_DAYEV_R|EPTP" @change="checkChange"></el-checkbox>
-			    <el-checkbox label="日均水位" v-model="DDcheckList['ST_RVAV_R__D|AVZ']" alt="ST_RVAV_R__D|AVZ" @change="checkChange"></el-checkbox>
+			    <el-checkbox label="日均水位" v-model="DDcheckList['ST_WASAV_R__D|AVUPZ']" alt="ST_WASAV_R__D|AVUPZ" @change="checkChange"></el-checkbox>
 			  </div>
 			</div>	
 			<div class="projectBox">
 				<span class="projectName">瞬时信息</span>
 				<div  class="checkList">		
-			    <el-checkbox label="瞬时水位" v-model="DDcheckList['ST_RIVER_R|Z']" alt="ST_RIVER_R|Z" type="Z" @change="checkChange"></el-checkbox>
+			    <el-checkbox label="瞬时水位" v-model="DDcheckList['ST_WAS_R|UPZ']" alt="ST_WAS_R|UPZ" type="Z" @change="checkChange"></el-checkbox>
 					<el-checkbox label="总过闸流量" v-model="DDcheckList['ST_WAS_R|TGTQ']" alt="ST_WAS_R|TGTQ" type="TGTQ" @change="checkChange"></el-checkbox>
 					<el-checkbox label="闸水特征值" v-model="DDcheckList['ST_WAS_R|SWCHRCD']" alt="ST_WAS_R|SWCHRCD" @change="checkChange"></el-checkbox>
-					<el-checkbox label="水势" v-model="DDcheckList['ST_RIVER_R|WPTN']" alt="ST_RIVER_R|WPTN" @change="checkChange"></el-checkbox>
-					<el-checkbox label="测流方式" v-model="DDcheckList['ST_RIVER_R|MSQMT']" alt="ST_RIVER_R|MSQMT" @change="checkChange"></el-checkbox>
+					<el-checkbox label="水势" v-model="DDcheckList['ST_WAS_R|SUPWPTN']" alt="ST_WAS_R|SUPWPTN" @change="checkChange"></el-checkbox>
+					<el-checkbox label="测流方式" v-model="DDcheckList['ST_WAS_R|MSQMT']" alt="ST_WAS_R|MSQMT" @change="checkChange"></el-checkbox>
 			  </div>
 			</div>	
 			<div class="projectBox">
 				<span class="projectName">旬统计</span>
 				<div  class="checkList">		
 			    <el-checkbox label="旬降雨量" v-model="DDcheckList['ST_PSTAT_R__X|ACCP']" alt="ST_PSTAT_R__X|ACCP" @change="checkChange"></el-checkbox>
-					<el-checkbox label="旬平均水位" v-model="DDcheckList['ST_RVAV_R__X|AVZ']" alt="ST_RVAV_R__X|AVZ" @change="checkChange"></el-checkbox>
+					<el-checkbox label="旬平均水位" v-model="DDcheckList['ST_WASAV_R__X|AVUPZ']" alt="ST_WASAV_R__X|AVUPZ" @change="checkChange"></el-checkbox>
 			  </div>
 			</div>
 			<div class="projectBox">
 				<span class="projectName">月统计</span>
 				<div  class="checkList">		
 			    <el-checkbox label="月降雨量" v-model="DDcheckList['ST_PSTAT_R__Y|ACCP']" alt="ST_PSTAT_R__Y|ACCP" @change="checkChange"></el-checkbox>
-					<el-checkbox label="月平均水位" v-model="DDcheckList['ST_RVAV_R__Y|AVZ']" alt="ST_RVAV_R__Y|AVZ" @change="checkChange"></el-checkbox>
+					<el-checkbox label="月平均水位" v-model="DDcheckList['ST_WASAV_R__Y|AVUPZ']" alt="ST_WASAV_R__Y|AVUPZ" @change="checkChange"></el-checkbox>
 			  </div>
 			</div>		
+			<div class="projectBox">
+				<span class="projectName">闸门信息</span>
+				<div  class="checkList">		
+			    <el-checkbox label="开闸数量" v-model="DDcheckList['ST_GATE_R|GTOPNUM']" alt="ST_GATE_R|GTOPNUM" @change="checkChange"></el-checkbox>
+			    <el-checkbox label="开闸高度" v-model="DDcheckList['ST_GATE_R|GTOPHGT']" alt="ST_GATE_R|GTOPHGT" type="GTOPHGT" @change="checkChange"></el-checkbox>
+			    <el-checkbox label="过闸流量" v-model="DDcheckList['ST_GATE_R|GTQ']" alt="ST_GATE_R|GTQ" type="GTQ" @change="checkChange"></el-checkbox>
+			    <el-checkbox label="测量方法" v-model="DDcheckList['ST_GATE_R|MSQMT']" alt="ST_GATE_R|MSQMT" @change="checkChange"></el-checkbox>
+			  </div>
+			</div>
 		</div>
 	</main>
 
@@ -247,16 +256,21 @@ import qs from 'qs'
 					'ST_PPTN_R|WTH':false,
 					'ST_DAYEV_R|DYE':false,
 					'ST_DAYEV_R|EPTP':false,
-					'ST_RVAV_R__D|AVZ':false,
-					'ST_RIVER_R|Z':false,
+					'ST_WASAV_R__D|AVUPZ':false,
+					'ST_WAS_R|UPZ':false,
 					'ST_WAS_R|TGTQ':false,
 					'ST_WAS_R|SWCHRCD':false,
-					'ST_RIVER_R|WPTN':false,
-					'ST_RIVER_R|MSQMT':false,
+					'ST_WAS_R|SUPWPTN':false,
+					'ST_WAS_R|MSQMT':false,
 					'ST_PSTAT_R__X|ACCP':false,
-					'ST_RVAV_R__X|AVZ':false,
+					'ST_WASAV_R__X|AVUPZ':false,
 					'ST_PSTAT_R__Y|ACCP':false,
-					'ST_RVAV_R__Y|AVZ':false
+					'ST_WASAV_R__Y|AVUPZ':false,
+					'ST_GATE_R|GTOPNUM':false,
+					'ST_GATE_R|GTOPHGT':false,
+					'ST_GATE_R|GTQ':false,
+					'ST_GATE_R|MSQMT':false,
+					
 				},
 				PPcheckList: {
 					'ST_PPTN_R|DRP': false,
@@ -303,8 +317,8 @@ import qs from 'qs'
 					'ST_PPTN_R|WTH':false,
 					'ST_DAYEV_R|DYE':false,
 					'ST_DAYEV_R|EPTP':false,
-					'ST_RIVER_R|Z':false,
-					'ST_RIVER_R|WPTN':false,
+					'ST_TIDE_R|TDZ':false,
+					'ST_TIDE_R|TDPTN':false,
 					'ST_TIDE_R__HH|TM':false,
 					'ST_TIDE_R__HH|TDZ':false,
 					'ST_TIDE_R__LH|TM':false,
