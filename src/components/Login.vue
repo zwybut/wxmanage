@@ -15,8 +15,16 @@
 			<h3>用户登陆</h3>
 			<el-form status-icon :model="numberValidateForm" ref="numberValidateForm" label-width="0" class="demo-ruleForm" :rules="rules">
 			  <el-form-item
-			    prop="userName">
-			    <el-input type="userName" v-model="numberValidateForm.userName" auto-complete="off" placeholder='请输入账号'></el-input>
+        prop="userName">
+			    <!-- <el-input type="userName" v-model="numberValidateForm.userName" auto-complete="off" placeholder='请输入账号'></el-input> -->
+          <el-cascader
+            expand-trigger="hover"
+            :options="areaChoose"
+             v-model="numberValidateForm.userName"
+            size="small"
+            class="username"
+            placeholder="请选择账号">
+          </el-cascader>
 			  </el-form-item>
 			  <el-form-item
 			    prop="passWord">
@@ -60,7 +68,7 @@ export default{
       if (this.passIf === '用户不存在') {
         callback(new Error('用户不存在'))
         this.passIf = ''
-      } else if (value === '') {
+      } else if (value.length == 0) {
         callback(new Error('账号不能为空'))
       } else {
         callback()
@@ -79,8 +87,9 @@ export default{
     return {
       date: '',
       time: '',
+      areaChoose:[],
       numberValidateForm: {
-        userName: '',
+        userName: [],
         passWord: '',
         code: ''
       },
@@ -100,6 +109,16 @@ export default{
     }
   },
   methods: {
+    postData () {									//获取地区信息
+      this.$http.get(this.notAuthUrl + 'util/addvcdTree', qs.stringify({}))
+      .then((res) => {
+        this.areaChoose = res.data.data
+        console.log(res)
+        this.areaChoose.unshift({'label':'浙江省','value':'330000'})
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
     codeChange () {
       console.log(this.$store.state.baseJson)
       this.codeSrc = this.notAuthUrl + 'util/code?tm=' + new Date().getTime()
@@ -143,38 +162,45 @@ export default{
     },
     submitForm (formName) {
       this.passIf = ''
-      let that = this
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(this.numberValidateForm.passWord)
-          this.$http.post(this.notAuthUrl + 'util/'+this.numberValidateForm.userName+'/login/'+this.numberValidateForm.code, qs.stringify({password: this.$sha1(this.numberValidateForm.passWord)}))
-          .then(function (res) {
+          let userName = ''
+          if(this.numberValidateForm.userName[1]){
+            userName = this.numberValidateForm.userName[1]
+          }
+          else{
+            if(this.numberValidateForm.userName[0]){
+              userName = this.numberValidateForm.userName[0]
+            }
+            else return
+          }
+            console.log(userName)
+          this.$http.post(this.notAuthUrl + 'util/'+userName+'/login/'+this.numberValidateForm.code, qs.stringify({password: this.$sha1(this.numberValidateForm.passWord)}))
+          .then( (res)=> {
             let code = res.data.code
             console.log(res)
             if (code === 0) {
-              that.$router.push('/home')
-              that.$store.commit('show', true)
-              that.$store.commit('loginName', that.numberValidateForm.userName)
+              this.$router.push('/home')
+              this.$store.commit('show', true)
+              this.$store.commit('loginName', this.numberValidateForm.userName)
               let sStorage = window.sessionStorage
-              sStorage['loginName'] = that.numberValidateForm.userName
-              
+              sStorage['loginName'] = userName
             } else {
-              that.codeChange()
               if (code === -2) {
-                that.passIf = '验证码错误'
-                that.numberValidateForm.code = ''
+                this.passIf = '验证码错误'
+                this.numberValidateForm.code = ''
               } else if (code === -4) {
-                that.passIf = '用户不存在'
-                that.numberValidateForm.userName = ''
-                that.numberValidateForm.code = ''
+                this.passIf = '用户不存在'
+                this.numberValidateForm.userName = []
+                this.numberValidateForm.code = ''
               } else if (code === -5) {
-                that.passIf = '密码错误'
-                that.numberValidateForm.passWord = ''
-                that.numberValidateForm.code = ''
+                this.passIf = '密码错误'
+                this.numberValidateForm.passWord = ''
+                this.numberValidateForm.code = ''
               }
+              this.codeChange()
             }
-            console.log(that.passIf)
-          }).catch(function (err) {
+          }).catch( (err)=> {
             console.log(err)
           })
         } else {
@@ -182,9 +208,21 @@ export default{
           return false
         }
       })
+    },
+    userOff () {								//用户注销
+      this.$http.post(this.baseUrl + 'userManage/logout',{})
+        .then((res) => {
+          console.log(res)
+          let sStorage = window.sessionStorage		//清除sessionStorage中的用户名
+          sStorage.clear()
+        }).catch((err) => {
+          console.log(err)
+        })
     }
   },
   mounted: function () {
+    // this.userOff()
+    this.postData()
     this.getTime()
     // this.setTime()
     let sStorage = window.sessionStorage					//清除sessionStorage中的用户名
@@ -195,6 +233,9 @@ export default{
 </script>
 
 <style scoped>
+.username{
+  width:100%;
+}
 .login{
 	width:100%;
 	height:100%;

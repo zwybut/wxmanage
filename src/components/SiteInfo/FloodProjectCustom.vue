@@ -8,7 +8,7 @@
 			<div class="projectBox">
 				<span class="projectName">日统计</span>
 				<div  class="checkList">		
-			    <el-checkbox label="日降雨量" v-model="ZZcheckList['ST_PPTN_R|DRP']" alt="ST_PPTN_R|DRP" @change="checkChange"></el-checkbox>
+			    <el-checkbox label="日降雨量" v-model="ZZcheckList['ST_PPTN_R|DYP']" alt="ST_PPTN_R|DYP" @change="checkChange"></el-checkbox>
 			    <el-checkbox label="目前天气" v-model="ZZcheckList['ST_PPTN_R|WTH']" alt="ST_PPTN_R|WTH" @change="checkChange"></el-checkbox>
 					<el-checkbox label="日蒸发量" v-model="ZZcheckList['ST_DAYEV_R|DYE']" alt="ST_DAYEV_R|DYE" type="DYE" @change="checkChange"></el-checkbox>
 			    <el-checkbox label="蒸发器类型" v-model="ZZcheckList['ST_DAYEV_R|EPTP']" alt="ST_DAYEV_R|EPTP" @change="checkChange"></el-checkbox>
@@ -52,7 +52,7 @@
 			<div class="projectBox">
 				<span class="projectName">日统计</span>
 				<div  class="checkList">		
-					<el-checkbox label="日降雨量" v-model="TTcheckList['ST_PPTN_R|DRP']" alt="ST_PPTN_R|DRP" @change="checkChange"></el-checkbox>
+					<el-checkbox label="日降雨量" v-model="TTcheckList['ST_PPTN_R|DYP']" alt="ST_PPTN_R|DYP" @change="checkChange"></el-checkbox>
 			    <el-checkbox label="目前天气" v-model="TTcheckList['ST_PPTN_R|WTH']" alt="ST_PPTN_R|WTH" @change="checkChange"></el-checkbox>
 					<el-checkbox label="日蒸发量" v-model="TTcheckList['ST_DAYEV_R|DYE']" alt="ST_DAYEV_R|DYE" type="DYE" @change="checkChange"></el-checkbox>
 					<el-checkbox label="蒸发器类型" v-model="TTcheckList['ST_DAYEV_R|EPTP']" alt="ST_DAYEV_R|EPTP" @change="checkChange"></el-checkbox>
@@ -114,7 +114,7 @@
 			<div class="projectBox">
 				<span class="projectName">日统计</span>
 				<div  class="checkList">		
-			    <el-checkbox label="日降雨量" v-model="RRcheckList['ST_PPTN_R|DRP']" alt="ST_PPTN_R|DRP" @change="checkChange"></el-checkbox>
+			    <el-checkbox label="日降雨量" v-model="RRcheckList['ST_PPTN_R|DYP']" alt="ST_PPTN_R|DYP" @change="checkChange"></el-checkbox>
 			    <el-checkbox label="目前天气" v-model="RRcheckList['ST_PPTN_R|WTH']" alt="ST_PPTN_R|WTH" @change="checkChange"></el-checkbox>
 					<el-checkbox label="日蒸发量" v-model="RRcheckList['ST_DAYEV_R|DYE']" alt="ST_DAYEV_R|DYE" type="DYE" @change="checkChange"></el-checkbox>
 			    <el-checkbox label="蒸发器类型" v-model="RRcheckList['ST_DAYEV_R|EPTP']" alt="ST_DAYEV_R|EPTP" @change="checkChange"></el-checkbox>
@@ -171,7 +171,7 @@
 			<div class="projectBox">
 				<span class="projectName">日统计</span>
 				<div  class="checkList">		
-			    <el-checkbox label="日雨量" v-model="PPcheckList['ST_PPTN_R|DRP']" alt="ST_PPTN_R|DRP" @change="checkChange"></el-checkbox>
+			    <el-checkbox label="日雨量" v-model="PPcheckList['ST_PPTN_R|DYP']" alt="ST_PPTN_R|DYP" @change="checkChange"></el-checkbox>
 			    <el-checkbox label="目前天气" v-model="PPcheckList['ST_PPTN_R|WTH']" alt="ST_PPTN_R|WTH" @change="checkChange"></el-checkbox>
 					<el-checkbox label="日蒸发量" v-model="PPcheckList['ST_DAYEV_R|DYE']" alt="ST_DAYEV_R|DYE" type="DYE" @change="checkChange"></el-checkbox>
 			    <el-checkbox label="蒸发器类型" v-model="PPcheckList['ST_DAYEV_R|EPTP']" alt="ST_DAYEV_R|EPTP" @change="checkChange"></el-checkbox>
@@ -194,7 +194,7 @@
 			<div class="projectBox">
 				<span class="projectName">日统计</span>
 				<div  class="checkList">		
-					<el-checkbox label="日降雨量" v-model="DDcheckList['ST_PPTN_R|DRP']" alt="ST_PPTN_R|DRP" @change="checkChange"></el-checkbox>
+					<el-checkbox label="日降雨量" v-model="DDcheckList['ST_PPTN_R|DYP']" alt="ST_PPTN_R|DYP" @change="checkChange"></el-checkbox>
 			    <el-checkbox label="目前天气" v-model="DDcheckList['ST_PPTN_R|WTH']" alt="ST_PPTN_R|WTH" @change="checkChange"></el-checkbox>
 					<el-checkbox label="日蒸发量" v-model="DDcheckList['ST_DAYEV_R|DYE']" alt="ST_DAYEV_R|DYE" type="DYE" @change="checkChange"></el-checkbox>
 			    <el-checkbox label="蒸发器类型" v-model="DDcheckList['ST_DAYEV_R|EPTP']" alt="ST_DAYEV_R|EPTP" @change="checkChange"></el-checkbox>
@@ -252,7 +252,7 @@ import qs from 'qs'
 				DD: false,
 				dataloading: false,
 				DDcheckList: {							//以下5个checkList用来存放5种sttp对应的配置具体内容
-					'ST_PPTN_R|DRP':false,
+					'ST_PPTN_R|DYP':false,
 					'ST_PPTN_R|WTH':false,
 					'ST_DAYEV_R|DYE':false,
 					'ST_DAYEV_R|EPTP':false,
@@ -273,7 +273,7 @@ import qs from 'qs'
 					
 				},
 				PPcheckList: {
-					'ST_PPTN_R|DRP': false,
+					'ST_PPTN_R|DYP': false,
 					'ST_PPTN_R|WTH': false,
 					'ST_DAYEV_R|DYE': false,
 					'ST_DAYEV_R|EPTP': false,
@@ -281,7 +281,7 @@ import qs from 'qs'
 					'ST_PSTAT_R__Y|ACCP': false
 				},
 				RRcheckList: {
-					'ST_PPTN_R|DRP': false,
+					'ST_PPTN_R|DYP': false,
 					'ST_PPTN_R|WTH': false,
 					'ST_DAYEV_R|DYE': false,
 					'ST_DAYEV_R|EPTP': false,
@@ -313,7 +313,7 @@ import qs from 'qs'
 					'ST_GATE_R|MSQMT': false
 				},
 				TTcheckList: {
-					'ST_PPTN_R|DRP':false,
+					'ST_PPTN_R|DYP':false,
 					'ST_PPTN_R|WTH':false,
 					'ST_DAYEV_R|DYE':false,
 					'ST_DAYEV_R|EPTP':false,
@@ -335,7 +335,7 @@ import qs from 'qs'
 					'ST_TIDEAV_R__Y|AVLTDZ':false
 				},
 				ZZcheckList: {
-					'ST_PPTN_R|DRP': false,
+					'ST_PPTN_R|DYP': false,
 					'ST_PPTN_R|WTH': false,
 					'ST_DAYEV_R|DYE': false,
 					'ST_DAYEV_R|EPTP': false,

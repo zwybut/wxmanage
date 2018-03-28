@@ -171,22 +171,26 @@
 			}
 		},
 		methods: {
-			transItemsName (item) {											
-				let arr = item.split('')
-				let itemName = []
-				for(let i=0;i<arr.length;i++){
-					switch (arr[i]) {
-						case 'Z': itemName.push('水位')
-						break
-						case 'Q': itemName.push('流量')
-						break
-						case 'P': itemName.push('雨量')
-						break
-						case 'E': itemName.push('蒸发')
-						break
+			transItemsName (item) {			
+				if (item && item.length > 0) {
+					let arr = item.split('')
+					let itemName = []
+					for(let i=0;i<arr.length;i++){
+						switch (arr[i]) {
+							case 'Z': itemName.push('水位')
+							break
+							case 'Q': itemName.push('流量')
+							break
+							case 'P': itemName.push('雨量')
+							break
+							case 'E': itemName.push('蒸发')
+							break
+						}
 					}
-				}
-				return itemName.join(' ')
+					return itemName.join(' ')
+				}								
+				else return ''
+				
 			},
 			siteOption(scope){
 				console.log(scope)

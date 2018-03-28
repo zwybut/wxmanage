@@ -9,12 +9,13 @@ import sha1 from 'js-sha1'
 import { store } from './store/store'
 import { config } from '../static/config.js'
 import 'babel-polyfill'
-
+import { utils } from './utils/index.js'
 //将axios绑到原型上，方便继承
 Vue.prototype.$http = axios
 Vue.prototype.$sha1 = sha1
 Vue.prototype.baseUrl = config.baseUrl
 Vue.prototype.notAuthUrl = config.notAuthUrl
+Vue.prototype.$utils = utils
     //以阻止 vue 在启动时生成生产提示
 Vue.config.productionTip = false
     //解决ajax跨域请求
@@ -54,12 +55,8 @@ Vue.prototype.timeTrans = (tm) => {
     }
     //获取可视区高度函数
 Vue.prototype.getClientAtBegin = () => {
-        let height = document.body.clientHeight - 60 - 32 - 20 - 30 - 32 - 30 - 36
-        return height
-    }
-    //js去除字符串前后空格
-Vue.prototype.trim = (str) => {
-    return str.replace(/(^\s*)|(\s*$)/g, "")
+    let height = document.body.clientHeight - 60 - 32 - 20 - 30 - 32 - 30 - 36
+    return height
 }
 Vue.prototype.sttpTransform = (str) => {
     let sttp

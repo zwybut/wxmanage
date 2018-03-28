@@ -208,7 +208,7 @@ export default{
 				for (let j = 0; j < stationList.length; j++) {
 					var sttp = stationList[j].sttp
 					sttp = sttp.slice(0,1)
-					var stcdTree = {label:stationList[j].stnm,stcd:stationList[j].stcd,sttp:stationList[j].sttp,district:stationList[j].xian,item:stationList[j].item}
+					var stcdTree = {label:stationList[j].stnm+'('+stationList[j].xian+')',stcd:stationList[j].stcd,sttp:stationList[j].sttp,district:stationList[j].xian,item:stationList[j].item}
 					switch(sttp){
 						case "P" :
 							sttpTree[0].children.push(stcdTree)
@@ -244,13 +244,13 @@ export default{
 					this.first = siteObj.shi
 					this.second = siteObj.sttp
 					this.third = siteObj.stnm
-					this.showNode.push(this.trim(siteObj.stnm))
+					this.showNode.push(this.$utils.stringUtil.trim(siteObj.stnm))
 					setTimeout(()=>{
-						this.$refs.tree.setCurrentKey(this.trim(siteObj.stnm))												//设置tree默认第一个选中
+						this.$refs.tree.setCurrentKey(this.$utils.stringUtil.trim(siteObj.stnm))												//设置tree默认第一个选中
 						this.$store.commit('siteStcd',siteObj.stcd)												//将stcd存储至store
 						this.$store.commit('siteSttp',this.sttpTransformReturn(siteObj.sttp))                       //将sttp存储至store
 						this.$router.push('/SiteInfo/BasicInfo')	
-						this.tree_input = this.trim(siteObj.stnm)
+						this.tree_input = this.$utils.stringUtil.trim(siteObj.stnm)
 						document.getElementById("hidden_").click()
 						console.log(siteObj.sttp)
 					}, 50)

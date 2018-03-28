@@ -203,20 +203,20 @@ export default {
       let sStorage = window.sessionStorage			//从sessionStorage获取用户登陆名
       return sStorage['loginName']
 		},
-		handleCommand(command){
-			if(command == 'zx'){
-				this.userOff()
-			}else if(command == 'xg'){
-				this.dialogFormVisible = true
-				let sStorage = window.sessionStorage
+	handleCommand(command){
+		if(command == 'zx'){
+			this.userOff()
+		}else if(command == 'xg'){
+			this.dialogFormVisible = true
+			let sStorage = window.sessionStorage
 			if (sStorage['loginName']) {							//存在，将store中的show置为true
 				this.form.userName = sStorage['loginName']
-      } else {																//不存在，跳转至登陆页面
-        this.$router.push('/Login')
-      }
-				
+			} else {																//不存在，跳转至登陆页面
+				this.$router.push('/Login')
 			}
-		},
+				
+		}
+	},
     userOff () {								//用户注销
 	  this.$http.post(this.baseUrl + 'userManage/logout',{})
       .then((res) => {
